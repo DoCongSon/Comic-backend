@@ -1,0 +1,28 @@
+### POST request to register a new user
+POST localhost:3000/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "user1@test.com",
+  "password": "password123",
+  "name": "John"
+}
+
+
+### POST request to login
+POST localhost:3000/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@test.com",
+  "password": "password123"
+}
+
+### POST request to logout
+POST localhost:3000/api/v1/auth/logout
+Content-Type: application/json
+
+{
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY1YTk2OGM3NjRjMzRkZGU0ZTJlNWQiLCJpYXQiOjE3MTc5NDc1NjUsImV4cCI6MTcyMDUzOTU2NSwidHlwZSI6IlJFRlJFU0gifQ.G-_6VsBXpdAB9pVdPhWCVRidvBMyb5bpb7J4c99RdJQ"
+}
+

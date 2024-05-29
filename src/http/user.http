@@ -1,0 +1,5 @@
+### Qery Users
+GET localhost:3000/api/v1/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY1YTk2OGM3NjRjMzRkZGU0ZTJlNWQiLCJpYXQiOjE3MTgwMzMyNzgsImV4cCI6MTcxODAzNTA3OCwidHlwZSI6IkFDQ0VTUyJ9.tQR25kvxuTZMT1cuMex_0wQSLDMpMf9U-gzFP03zlx4
+
+### Get User

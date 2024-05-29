@@ -1,0 +1,26 @@
+import winston from 'winston'
+import * as process from 'node:process'
+
+const enumerateErrorFormat = winston.format((info: winston.Logform.TransformableInfo) => {
+  if (info instanceof Error) {
+    Object.assign(info, { message: info.stack })
+  }
+  return info
+})
+
+const loggerConfig = winston.createLogger({
+  level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
+  format: winston.format.combine(
+    enumerateErrorFormat(),
+    process.env.NODE_ENV === 'development' ? winston.format.colorize() : winston.format.uncolorize(),
+    winston.format.splat(),
+    winston.format.printf(({ level, message }) => `${level}: ${message}`)
+  ),
+  transports: [
+    new winston.transports.Console({
+      stderrLevels: ['error']
+    })
+  ]
+})
+
+export default loggerConfig
