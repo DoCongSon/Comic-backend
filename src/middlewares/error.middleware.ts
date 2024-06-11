@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 import httpStatus from 'http-status'
-import loggerConfig from '../config/logger.config.js'
+import logger from '../config/logger.config.js'
 import ApiError from '../utils/ApiError.js'
 import { Request, Response, NextFunction } from 'express'
 import * as process from 'node:process'
@@ -32,7 +32,7 @@ const errorHandler = (err: any, req: Request, res: Response, next: NextFunction)
   }
 
   if (process.env.NODE_ENV === 'development') {
-    loggerConfig.error(err)
+    logger.error(err)
   }
 
   res.status(statusCode).send(response)
