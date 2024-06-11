@@ -14,6 +14,7 @@ import router from './routes/index.js'
 import { errorConverter, errorHandler } from './middlewares/error.middleware.js'
 import ApiError from './utils/ApiError.js'
 import { authLimiter } from './middlewares/rateLimiter.middleware.js'
+import logger from './config/logger.config.js'
 
 const app: Express = express()
 dotenv.config()
@@ -85,9 +86,8 @@ const start = async () => {
   try {
     await mongoose.connect(`${process.env.MONGO_URI}`)
     app.listen(port, () => {
-      console.log(`[server]: Server is running at http://localhost:${port}`)
-      console.log(`[server]: Documents is running at http://localhost:${port}/docs`)
-      console.log(`[server]: API is running at http://localhost:${port}/api/v1/ping`)
+      logger.info(`[server]: Server is running at http://localhost:${port}`)
+      logger.info(`[server]: Documents is running at http://localhost:${port}/docs`)
     })
   } catch (error) {
     console.error(error)

@@ -8,7 +8,7 @@ const enumerateErrorFormat = winston.format((info: winston.Logform.Transformable
   return info
 })
 
-const loggerConfig = winston.createLogger({
+const logger = winston.createLogger({
   level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
   format: winston.format.combine(
     enumerateErrorFormat(),
@@ -23,4 +23,4 @@ const loggerConfig = winston.createLogger({
   ]
 })
 
-export default loggerConfig
+export default logger
