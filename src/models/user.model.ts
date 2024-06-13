@@ -1,4 +1,4 @@
-import { Model, model, Schema, Types, Document } from 'mongoose'
+import { Model, model, Schema, ObjectId, Document } from 'mongoose'
 import bcrypt from 'bcrypt'
 import { toJSON, paginate } from './plugins/index.js'
 import { Options } from './plugins/paginate.plugin.js'
@@ -16,7 +16,7 @@ export interface IUser extends Document {
 export type CreateUser = Omit<IUser, 'isPasswordMatch'>
 
 interface IUserModel extends Model<IUser> {
-  isEmailTaken: (this: Model<IUser>, email: string, excludeUserId?: Types.ObjectId) => Promise<boolean>
+  isEmailTaken: (this: Model<IUser>, email: string, excludeUserId?: ObjectId) => Promise<boolean>
   isPasswordMatch: (password: string) => Promise<boolean>
   paginate: (filter: any, options: Options) => Promise<IUser[]>
 }
@@ -55,7 +55,7 @@ UserSchema.plugin(paginate)
 UserSchema.statics.isEmailTaken = async function (
   this: Model<IUser>,
   email: string,
-  excludeUserId?: Types.ObjectId
+  excludeUserId?: ObjectId
 ): Promise<boolean> {
   const user = await this.findOne({ email, _id: { $ne: excludeUserId } })
   return !!user

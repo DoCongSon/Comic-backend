@@ -6,6 +6,7 @@ import passport from 'passport'
 import helmet from 'helmet'
 import session from 'express-session'
 import swaggerUi from 'swagger-ui-express'
+import swaggerJsdoc, { Options } from 'swagger-jsdoc'
 import httpStatus from 'http-status'
 import mongoose from 'mongoose'
 import * as process from 'node:process'
@@ -16,8 +17,9 @@ import ApiError from './utils/ApiError.js'
 import { authLimiter } from './middlewares/rateLimiter.middleware.js'
 import logger from './config/logger.config.js'
 
-const app: Express = express()
 dotenv.config()
+
+const app: Express = express()
 const port = process.env.PORT || 3000
 
 // session
@@ -56,15 +58,56 @@ app.use(passport.initialize())
 passport.use('jwt', jwtStrategy)
 
 // swagger docs
-app.use(
-  '/docs',
-  swaggerUi.serve,
-  swaggerUi.setup(undefined, {
-    swaggerOptions: {
-      url: 'docs/swagger.json'
+const swaggerOptions: Options = {
+  swaggerDefinition: {
+    swagger: '2.0',
+    info: {
+      title: 'Comic API',
+      description: 'API for comic books',
+      version: '1.0.0',
+      contact: {
+        name: 'Comic API'
+      },
+      license: {
+        url: 'https://opensource.org/licenses/MIT',
+        name: 'MIT'
+      }
+    },
+    host: `localhost:${port}`,
+    basePath: '/api/v1',
+    servers: [
+      {
+        url: `http://localhost:${port}/api/v1`,
+        description: 'Development server'
+      },
+      {
+        url: `http://localhost:${port}/api/v1`,
+        description: 'Production'
+      }
+    ],
+    definitions: {
+      User: {
+        type: 'object',
+        properties: {
+          username: {
+            type: 'string',
+            description: "User's unique username",
+            example: 'john_doe'
+          },
+          password: {
+            type: 'string',
+            description: "User's password",
+            example: 'password123'
+          }
+          // Add other properties as needed
+        }
+      }
     }
-  })
-)
+  },
+  apis: ['src/routes/v1/*.ts']
+}
+const swaggerDocs = swaggerJsdoc(swaggerOptions)
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 
 // limit repeated failed requests to auth endpoints
 if (process.env.NODE_ENV === 'production') {

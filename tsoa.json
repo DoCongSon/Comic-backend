@@ -1,22 +1,8 @@
 {
   "entryFile": "src/index.ts",
   "noImplicitAdditionalProperties": "throw-on-extras",
-  "controllerPathGlobs": [
-    "src/**/*controller.ts"
-  ],
   "spec": {
     "outputDirectory": "public/docs",
-    "specVersion": 3,
-    "host": "localhost:3000",
-    "schemes": [
-      "http"
-    ],
-    "basePath": "/api/v1",
-    "name": "Comic API Documentation",
-    "description": "API Documentation for the Comic created by DoCongSon",
-    "version": "1.0.0"
-  },
-  "routes": {
-    "routesDir": "public/docs/routes"
+    "specVersion": 3
   }
 }
