@@ -1,4 +1,6 @@
 import express, { Express, NextFunction, Request, Response } from 'express'
+import { fileURLToPath } from 'url'
+import path, { dirname } from 'path'
 import morgan from 'morgan'
 import dotenv from 'dotenv'
 import cors from 'cors'
@@ -18,6 +20,8 @@ import { authLimiter } from './middlewares/rateLimiter.middleware.js'
 import logger from './config/logger.config.js'
 
 dotenv.config()
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const app: Express = express()
 const port = process.env.PORT || 3000
@@ -52,6 +56,10 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(morgan('tiny'))
 app.use(express.static('public'))
+
+// set view engine
+app.set('view engine', 'ejs')
+app.set('views', path.join(__dirname, 'views'))
 
 // jwt authentication
 app.use(passport.initialize())

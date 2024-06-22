@@ -37,7 +37,8 @@ const forgotPassword: SchemaValidator = {
 
 const resetPassword: SchemaValidator = {
   query: Joi.object().keys({
-    token: Joi.string().required()
+    token: Joi.string().required(),
+    email: Joi.string().email().required()
   })
 }
 

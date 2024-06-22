@@ -31,3 +31,16 @@ export const updateUserById = async (userId: ObjectId, updateBody: OptionalIUser
 export const getUserByEmail = async (email: string) => {
   return User.findOne({ email })
 }
+
+export const generatePassword = () => {
+  const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  const numbers = '0123456789'
+  const all = letters + numbers
+  let password = ''
+  password += letters[Math.floor(Math.random() * letters.length)]
+  password += numbers[Math.floor(Math.random() * numbers.length)]
+  for (let i = 0; i < 8; i++) {
+    password += all[Math.floor(Math.random() * all.length)]
+  }
+  return password
+}
