@@ -37,9 +37,3 @@ Content-Type: application/json
 {
   "email": "user@test.com"
 }
-
-### POST request to reset password
-POST http://localhost:3000/api/v1/auth/reset-password?email=user@test.com&
-  token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY1YTk2OGM3NjRjMzRkZGU0ZTJlNWQiLCJpYXQiOjE3MTkwNDk3MjUsImV4cCI6MTcxOTA1MDMyNSwidHlwZSI6IlJFU0VUX1BBU1NXT1JEIn0.oJZGyorfTerAOu2nJIZkXtZZzDQhRSwwUjH3mefV7Y0
-
-
