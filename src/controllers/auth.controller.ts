@@ -10,19 +10,24 @@ export class AuthController {
   public register = catchAsync(async (req: Request, res: Response) => {
     const user = await authService.register(req.body)
     const tokens = await tokenService.generateAuthTokens(user)
-    res.status(httpStatus.CREATED).send({ user, tokens })
+    res.status(httpStatus.CREATED).send(tokens)
   })
 
   public login = catchAsync(async (req: Request, res: Response) => {
     const { email, password } = req.body
     const user = await authService.loginWithEmailAndPassword({ email, password })
     const tokens = await tokenService.generateAuthTokens(user)
-    res.status(httpStatus.OK).send({ user, tokens })
+    res.status(httpStatus.OK).send(tokens)
   })
 
   public logout = catchAsync(async (req: Request, res: Response) => {
     await authService.logout(req.body.refreshToken)
     res.status(httpStatus.NO_CONTENT).send()
+  })
+
+  public me = catchAsync(async (req: Request, res: Response) => {
+    const user = req.user
+    res.status(httpStatus.OK).send(user)
   })
 
   public refreshTokens = catchAsync(async (req: Request, res: Response) => {

@@ -16,6 +16,7 @@ router.get('/reset-password', validate(AuthValidation.resetPassword), controller
 router.post('/forgot-password', validate(AuthValidation.forgotPassword), controller.forgotPassword)
 router.post('/verify-email', validate(AuthValidation.verifyEmail), controller.verifyEmail)
 router.post('/send-verification-email', auth(), controller.sendVerificationEmail)
+router.get('/me', auth(), controller.me)
 
 export default router
 

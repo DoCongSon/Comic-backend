@@ -1,4 +1,4 @@
-import { IUser, User } from '../models/user.model.js'
+import { CreateUser, IUser, User } from '../models/user.model.js'
 import { Options } from '../models/plugins/paginate.plugin.js'
 import ApiError from '../utils/ApiError.js'
 import httpStatus from 'http-status'
@@ -11,11 +11,22 @@ export const queryUsers = async (filter: any, options: Options) => {
   return users
 }
 
-export const getUserById = async (id: ObjectId) => {
-  return User.findById(id)
+export const getUserById = async (id: ObjectId | string) => {
+  const user = await User.findById(id)
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found')
+  }
+  return user
 }
 
-export const updateUserById = async (userId: ObjectId, updateBody: OptionalIUser) => {
+export const createUser = async (userBody: CreateUser) => {
+  if (await User.isEmailTaken(userBody.email)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken')
+  }
+  return User.create(userBody)
+}
+
+export const updateUserById = async (userId: ObjectId | string, updateBody: OptionalIUser) => {
   const user = await getUserById(userId)
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found')
@@ -26,6 +37,14 @@ export const updateUserById = async (userId: ObjectId, updateBody: OptionalIUser
   Object.assign(user, updateBody)
   await user.save()
   return user
+}
+
+export const deleteUserById = async (userId: ObjectId | string) => {
+  const user = await getUserById(userId)
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found')
+  }
+  await user.deleteOne()
 }
 
 export const getUserByEmail = async (email: string) => {

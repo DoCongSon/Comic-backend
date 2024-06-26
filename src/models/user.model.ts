@@ -13,10 +13,10 @@ export interface IUser extends Document {
   isPasswordMatch: (password: string) => Promise<boolean>
 }
 
-export type CreateUser = Omit<IUser, 'isPasswordMatch'>
+export type CreateUser = Pick<IUser, 'email' | 'password' | 'name' | 'role'>
 
 interface IUserModel extends Model<IUser> {
-  isEmailTaken: (this: Model<IUser>, email: string, excludeUserId?: ObjectId) => Promise<boolean>
+  isEmailTaken: (this: Model<IUser>, email: string, excludeUserId?: ObjectId | string) => Promise<boolean>
   isPasswordMatch: (password: string) => Promise<boolean>
   paginate: (filter: any, options: Options) => Promise<IUser[]>
 }
@@ -55,7 +55,7 @@ UserSchema.plugin(paginate)
 UserSchema.statics.isEmailTaken = async function (
   this: Model<IUser>,
   email: string,
-  excludeUserId?: ObjectId
+  excludeUserId?: ObjectId | string
 ): Promise<boolean> {
   const user = await this.findOne({ email, _id: { $ne: excludeUserId } })
   return !!user
