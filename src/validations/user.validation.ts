@@ -22,8 +22,9 @@ const createUser: SchemaValidator = {
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().custom(password),
+    avatar: Joi.string(),
     name: Joi.string().required(),
-    role: Joi.string().required().valid('USER', 'ADMIN')
+    role: Joi.string().required().valid('USER', 'USERVIP', 'ADMIN')
   })
 }
 
@@ -35,7 +36,8 @@ const updateUser: SchemaValidator = {
     email: Joi.string().email(),
     password: Joi.string().custom(password),
     name: Joi.string(),
-    role: Joi.string().valid('USER', 'ADMIN')
+    avatar: Joi.string(),
+    role: Joi.string().valid('USER', 'USERVIP', 'ADMIN')
   })
 }
 
@@ -45,10 +47,38 @@ const deleteUser: SchemaValidator = {
   })
 }
 
+const updatePoints: SchemaValidator = {
+  params: Joi.object().keys({
+    userId: Joi.string().required()
+  }),
+  body: Joi.object().keys({
+    points: Joi.number().integer().required()
+  })
+}
+
+const addAchievement: SchemaValidator = {
+  params: Joi.object().keys({
+    userId: Joi.string().required()
+  }),
+  body: Joi.object().keys({
+    achievementId: Joi.string().required()
+  })
+}
+
+const removeAchievement: SchemaValidator = {
+  params: Joi.object().keys({
+    userId: Joi.string().required(),
+    achievementId: Joi.string().required()
+  })
+}
+
 export default {
   getUsers,
   getUser,
   createUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  updatePoints,
+  addAchievement,
+  removeAchievement
 }

@@ -3,13 +3,22 @@ import bcrypt from 'bcrypt'
 import { toJSON, paginate } from './plugins/index.js'
 import { Options } from './plugins/paginate.plugin.js'
 import { userRoles } from '../enums/constants/user.constant.js'
+import { levelNames } from '../enums/constants/level.constant.js'
 
 export interface IUser extends Document {
   email: string
   password: string
   name: string
+  avatar: string
   verified: boolean
   role: string
+  progress: {
+    level: number
+    levelName: string
+    points: number
+    ruby: number
+    achievements: ObjectId[]
+  }
   isPasswordMatch: (password: string) => Promise<boolean>
 }
 
@@ -32,11 +41,19 @@ export const UserSchema = new Schema<IUser>(
     },
     password: { type: 'String', required: true, private: true },
     name: { type: 'String', required: true },
+    avatar: { type: 'String', required: true, default: 'https://ui-avatars.com/api/?name=User' },
     verified: { type: 'Boolean', default: false },
     role: {
       type: 'String',
       enum: [...Object.values(userRoles)],
       default: userRoles.USER
+    },
+    progress: {
+      level: { type: 'Number', default: 1 },
+      levelName: { type: 'String', default: levelNames[0], enum: levelNames },
+      points: { type: 'Number', default: 0 },
+      ruby: { type: 'Number', default: 100 },
+      achievements: [{ type: Schema.Types.ObjectId, ref: 'Achievement' }]
     }
   },
   { timestamps: true }

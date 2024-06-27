@@ -3,6 +3,7 @@ import { Options } from '../models/plugins/paginate.plugin.js'
 import ApiError from '../utils/ApiError.js'
 import httpStatus from 'http-status'
 import { ObjectId } from 'mongoose'
+import { levels } from '../enums/constants/level.constant.js'
 
 type OptionalIUser = Partial<IUser>
 
@@ -28,9 +29,6 @@ export const createUser = async (userBody: CreateUser) => {
 
 export const updateUserById = async (userId: ObjectId | string, updateBody: OptionalIUser) => {
   const user = await getUserById(userId)
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User not found')
-  }
   if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken')
   }
@@ -62,4 +60,41 @@ export const generatePassword = () => {
     password += all[Math.floor(Math.random() * all.length)]
   }
   return password
+}
+
+export const updatePointsAndLevel = async (userId: ObjectId | string, points: number) => {
+  const user = await getUserById(userId)
+  const currentLevel = user.progress.level
+  user.progress.points += points
+  const level = levels.find((level) => user.progress.points < level.points)
+  user.progress.level = level ? level.level : levels[levels.length - 1].level
+  user.progress.levelName = level ? level.levelName : levels[levels.length - 1].levelName
+
+  if (currentLevel < user.progress.level) {
+    user.progress.ruby += levels[user.progress.level].ruby
+  }
+
+  await user.save()
+  return user
+}
+
+export const addAchievementToUser = async (userId: ObjectId | string, achievementId: ObjectId | string) => {
+  const user = await getUserById(userId)
+  user.progress.achievements.push(achievementId as ObjectId)
+  await user.save()
+  return user
+}
+
+export const removeAchievementFromUser = async (userId: ObjectId | string, achievementId: ObjectId | string) => {
+  const user = await getUserById(userId)
+  user.progress.achievements = user.progress.achievements.filter((id) => id.toString() !== achievementId.toString())
+  await user.save()
+  return user
+}
+
+export const incrementRuby = async (userId: ObjectId | string, ruby: number) => {
+  const user = await getUserById(userId)
+  user.progress.ruby += ruby
+  await user.save()
+  return user
 }

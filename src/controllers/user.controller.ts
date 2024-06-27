@@ -32,4 +32,19 @@ export class UserController {
     await userService.deleteUserById(req.params.userId)
     res.status(httpStatus.NO_CONTENT).send()
   })
+
+  public updatePointsAndLevel = catchAsync(async (req: EXRequest, res: EXResponse) => {
+    const user = await userService.updatePointsAndLevel(req.params.userId, req.body.points)
+    res.status(httpStatus.OK).send(user)
+  })
+
+  public addAchievementToUser = catchAsync(async (req: EXRequest, res: EXResponse) => {
+    const user = await userService.addAchievementToUser(req.params.userId, req.body.achievementId)
+    res.status(httpStatus.OK).send(user)
+  })
+
+  public removeAchievementFromUser = catchAsync(async (req: EXRequest, res: EXResponse) => {
+    const user = await userService.removeAchievementFromUser(req.params.userId, req.params.achievementId)
+    res.status(httpStatus.OK).send(user)
+  })
 }

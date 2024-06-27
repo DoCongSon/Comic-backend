@@ -119,14 +119,8 @@
     /* Skip type checking all .d.ts files. */
   },
   "ts-node": {
-    "require": [
-      "tsconfig-paths/register"
-    ]
+    "require": ["tsconfig-paths/register"]
   },
-  "files": [
-    "src/type.d.ts"
-  ],
-  "include": [
-    "src/**/*"
-  ]
+  "files": ["src/type.d.ts"],
+  "include": ["src/**/*"]
 }

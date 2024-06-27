@@ -14,4 +14,13 @@ router.post('/', auth('MANAGE_USERS'), validate(UserValidation.createUser), cont
 router.put('/:userId', auth('MANAGE_USERS'), validate(UserValidation.updateUser), controller.updateUser)
 router.delete('/:userId', auth('MANAGE_USERS'), validate(UserValidation.deleteUser), controller.deleteUser)
 
+router.post('/:userId/points', auth(), validate(UserValidation.updatePoints), controller.updatePointsAndLevel)
+router.post('/:userId/achievements', auth(), validate(UserValidation.addAchievement), controller.addAchievementToUser)
+router.delete(
+  '/:userId/achievements/:achievementId',
+  auth(),
+  validate(UserValidation.removeAchievement),
+  controller.removeAchievementFromUser
+)
+
 export default router
