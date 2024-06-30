@@ -1,3 +1,4 @@
+import { getAchievementById } from './achievement.service.js'
 import { CreateUser, IUser, User } from '../models/user.model.js'
 import { Options } from '../models/plugins/paginate.plugin.js'
 import ApiError from '../utils/ApiError.js'
@@ -80,13 +81,23 @@ export const updatePointsAndLevel = async (userId: ObjectId | string, points: nu
 
 export const addAchievementToUser = async (userId: ObjectId | string, achievementId: ObjectId | string) => {
   const user = await getUserById(userId)
-  user.progress.achievements.push(achievementId as ObjectId)
+  const achievement = await getAchievementById(achievementId)
+  if (user.progress.achievements.includes(achievement.id)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Achievement already added')
+  }
+  user.progress.achievements.push(achievement.id)
   await user.save()
   return user
 }
 
 export const removeAchievementFromUser = async (userId: ObjectId | string, achievementId: ObjectId | string) => {
   const user = await getUserById(userId)
+  const achievement = await getAchievementById(achievementId)
+
+  if (!user.progress.achievements.includes(achievement.id)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Achievement not added')
+  }
+
   user.progress.achievements = user.progress.achievements.filter((id) => id.toString() !== achievementId.toString())
   await user.save()
   return user
