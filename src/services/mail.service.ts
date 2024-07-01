@@ -1,26 +1,24 @@
 import nodemailer from 'nodemailer'
-import dotenv from 'dotenv'
 import ejs from 'ejs'
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import fs from 'fs'
-import * as process from 'node:process'
 import logger from '../config/logger.config.js'
+import envConfig from '../config/env.config.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-dotenv.config()
 
 const transport = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
+  host: envConfig.smtp.host,
+  port: envConfig.smtp.port,
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
+    user: envConfig.smtp.user,
+    pass: envConfig.smtp.pass
   }
 })
 
-if (process.env.NODE_ENV !== 'test') {
+if (envConfig.env !== 'test') {
   transport
     .verify()
     .then(() => logger.info('Connected to email server'))
@@ -31,13 +29,13 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 const sendEmail = async (to: string, subject: string, html: string): Promise<void> => {
-  const msg = { from: process.env.SMTP_FROM, to, subject, html }
+  const msg = { from: envConfig.smtp.from, to, subject, html }
   await transport.sendMail(msg)
 }
 
 const sendResetPasswordEmail = async (to: string, token: string): Promise<void> => {
   const subject = 'Reset password'
-  const resetPasswordUrl = `${process.env.API_URL}/auth/reset-password?email=${to}&token=${token}`
+  const resetPasswordUrl = `${envConfig.apiUrl}/auth/reset-password?email=${to}&token=${token}`
 
   const templatePath = path.join(__dirname, '../views/email', 'resetPassword.ejs')
   const template = fs.readFileSync(templatePath, 'utf-8')
@@ -48,7 +46,7 @@ const sendResetPasswordEmail = async (to: string, token: string): Promise<void> 
 
 const sendVerificationEmail = async (to: string, token: string): Promise<void> => {
   const subject = 'Email Verification'
-  const verificationEmailUrl = `${process.env.API_URL}/auth/verify-email?token=${token}`
+  const verificationEmailUrl = `${envConfig.apiUrl}/auth/verify-email?token=${token}`
 
   const templatePath = path.join(__dirname, '../views/email', 'verifyEmail.ejs')
   const template = fs.readFileSync(templatePath, 'utf-8')

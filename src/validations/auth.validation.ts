@@ -17,6 +17,12 @@ const login: SchemaValidator = {
   })
 }
 
+const google: SchemaValidator = {
+  query: Joi.object().keys({
+    return: Joi.string().required()
+  })
+}
+
 const logout: SchemaValidator = {
   body: Joi.object().keys({
     refreshToken: Joi.string().required()
@@ -58,6 +64,7 @@ const verifyEmail: SchemaValidator = {
 export default {
   register,
   login,
+  google,
   logout,
   refreshTokens,
   forgotPassword,

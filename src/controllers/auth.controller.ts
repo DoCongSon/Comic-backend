@@ -20,6 +20,22 @@ export class AuthController {
     res.status(httpStatus.OK).send(tokens)
   })
 
+  public google = catchAsync(async (req: Request, res: Response) => {
+    const user = req.user
+    const state = req.query.state ? JSON.parse(decodeURIComponent(req.query.state as string)) : {}
+    const returnTo = state.returnTo || '/'
+    const tokens = await tokenService.generateAuthTokens(user as IUser)
+    const htmlWithEmbeddedTokens = `
+    <html>
+      <script>
+        window.localStorage.setItem('tokens', '${JSON.stringify(tokens)}');
+        window.location.href = '${returnTo}';
+      </script>
+    </html>
+    `
+    res.status(httpStatus.OK).send(htmlWithEmbeddedTokens)
+  })
+
   public logout = catchAsync(async (req: Request, res: Response) => {
     await authService.logout(req.body.refreshToken)
     res.status(httpStatus.NO_CONTENT).send()

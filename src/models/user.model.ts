@@ -22,7 +22,7 @@ export interface IUser extends Document {
   isPasswordMatch: (password: string) => Promise<boolean>
 }
 
-export type CreateUser = Pick<IUser, 'email' | 'password' | 'name' | 'role'>
+export type CreateUser = Pick<IUser, 'email' | 'password' | 'name'> & Partial<Pick<IUser, 'role' | 'avatar'>>
 
 interface IUserModel extends Model<IUser> {
   isEmailTaken: (this: Model<IUser>, email: string, excludeUserId?: ObjectId | string) => Promise<boolean>
@@ -49,7 +49,7 @@ export const UserSchema = new Schema<IUser>(
       default: userRoles.USER
     },
     progress: {
-      level: { type: 'Number', default: 1 },
+      level: { type: 'Number', default: 0 },
       levelName: { type: 'String', default: levelNames[0], enum: levelNames },
       points: { type: 'Number', default: 0 },
       ruby: { type: 'Number', default: 100 },

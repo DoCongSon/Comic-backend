@@ -1,5 +1,3 @@
-import { run } from 'node:test'
-
 export const levels = [
   {
     level: 0,
