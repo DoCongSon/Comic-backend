@@ -43,17 +43,11 @@ export const logout = async (refreshToken: string) => {
  * @returns {Promise<Object>}
  */
 export const refreshAuth = async (refreshToken: string) => {
-  try {
-    const refreshTokenDoc = await tokenService.verifyToken(refreshToken, tokenTypes.REFRESH)
-    const user = await userService.getUserById(refreshTokenDoc.user)
-    if (!user) {
-      throw new Error()
-    }
-    await Token.deleteOne({ _id: refreshTokenDoc._id })
-    return tokenService.generateAuthTokens(user)
-  } catch (error) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate')
-  }
+  const refreshTokenDoc = await tokenService.verifyToken(refreshToken, tokenTypes.REFRESH)
+  const RTExpires = refreshTokenDoc.expires
+  const user = await userService.getUserById(refreshTokenDoc.user)
+  await Token.deleteOne({ _id: refreshTokenDoc._id })
+  return tokenService.generateAuthTokens(user, RTExpires)
 }
 
 /**
@@ -63,19 +57,12 @@ export const refreshAuth = async (refreshToken: string) => {
  * @returns {Promise<string>} newPassword
  */
 export const resetPassword = async (resetPasswordToken: string) => {
-  try {
-    const resetPasswordTokenDoc = await tokenService.verifyToken(resetPasswordToken, tokenTypes.RESET_PASSWORD)
-    const user = await userService.getUserById(resetPasswordTokenDoc.user)
-    if (!user) {
-      throw new Error()
-    }
-    const newPassword = userService.generatePassword()
-    await userService.updateUserById(user.id, { password: newPassword })
-    await Token.deleteMany({ user: user.id, type: tokenTypes.RESET_PASSWORD })
-    return newPassword
-  } catch (error) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Password reset failed')
-  }
+  const resetPasswordTokenDoc = await tokenService.verifyToken(resetPasswordToken, tokenTypes.RESET_PASSWORD)
+  const user = await userService.getUserById(resetPasswordTokenDoc.user)
+  const newPassword = userService.generatePassword()
+  await userService.updateUserById(user.id, { password: newPassword })
+  await Token.deleteMany({ user: user.id, type: tokenTypes.RESET_PASSWORD })
+  return newPassword
 }
 
 /**
@@ -85,17 +72,10 @@ export const resetPassword = async (resetPasswordToken: string) => {
  * @returns {Promise}
  */
 export const changePassword = async (resetPasswordToken: string, newPassword: string) => {
-  try {
-    const resetPasswordTokenDoc = await tokenService.verifyToken(resetPasswordToken, tokenTypes.RESET_PASSWORD)
-    const user = await userService.getUserById(resetPasswordTokenDoc.user)
-    if (!user) {
-      throw new Error()
-    }
-    await userService.updateUserById(user.id, { password: newPassword })
-    await Token.deleteMany({ user: user.id, type: tokenTypes.RESET_PASSWORD })
-  } catch (error) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Password reset failed')
-  }
+  const resetPasswordTokenDoc = await tokenService.verifyToken(resetPasswordToken, tokenTypes.RESET_PASSWORD)
+  const user = await userService.getUserById(resetPasswordTokenDoc.user)
+  await userService.updateUserById(user.id, { password: newPassword })
+  await Token.deleteMany({ user: user.id, type: tokenTypes.RESET_PASSWORD })
 }
 
 /**
@@ -104,15 +84,8 @@ export const changePassword = async (resetPasswordToken: string, newPassword: st
  * @returns {Promise}
  */
 export const verifyEmail = async (verifyEmailToken: string) => {
-  try {
-    const verifyEmailTokenDoc = await tokenService.verifyToken(verifyEmailToken, tokenTypes.VERIFY_EMAIL)
-    const user = await userService.getUserById(verifyEmailTokenDoc.user)
-    if (!user) {
-      throw new Error()
-    }
-    await Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL })
-    await userService.updateUserById(user.id, { verified: true })
-  } catch (error) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Email verification failed')
-  }
+  const verifyEmailTokenDoc = await tokenService.verifyToken(verifyEmailToken, tokenTypes.VERIFY_EMAIL)
+  const user = await userService.getUserById(verifyEmailTokenDoc.user)
+  await Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL })
+  await userService.updateUserById(user.id, { verified: true })
 }

@@ -68,7 +68,7 @@ export const verifyToken = async (token: string, type: string): Promise<IToken> 
   const payload = jwt.verify(token, process.env.JWT_SECRET as string)
   const tokenDoc = await Token.findOne({ token, type, user: payload.sub, blacklisted: false })
   if (!tokenDoc) {
-    throw new Error('Token not found')
+    throw new ApiError(httpStatus.NOT_FOUND, 'Token not found')
   }
   return tokenDoc
 }
@@ -78,11 +78,13 @@ export const verifyToken = async (token: string, type: string): Promise<IToken> 
  * @param {IUser} user
  * @returns {Promise<Object>}
  */
-export const generateAuthTokens = async (user: IUser) => {
+export const generateAuthTokens = async (user: IUser, RTExpires?: Date) => {
   const accessTokenExpires = moment().add(process.env.JWT_ACCESS_EXPIRATION_MINUTES, 'minutes')
   const accessToken = generateToken(user.id, accessTokenExpires, tokenTypes.ACCESS)
 
-  const refreshTokenExpires = moment().add(process.env.JWT_REFRESH_EXPIRATION_DAYS, 'days')
+  const refreshTokenExpires = RTExpires
+    ? moment(RTExpires)
+    : moment().add(process.env.JWT_REFRESH_EXPIRATION_DAYS, 'days')
   const refreshToken = generateToken(user.id, refreshTokenExpires, tokenTypes.REFRESH)
   await saveToken(refreshToken, user.id, refreshTokenExpires, tokenTypes.REFRESH)
 
