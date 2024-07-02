@@ -16,7 +16,6 @@ import { errorConverter, errorHandler } from './middlewares/error.middleware.js'
 import ApiError from './utils/ApiError.js'
 import { authLimiter } from './middlewares/rateLimiter.middleware.js'
 import logger from './config/logger.config.js'
-import { IUser } from './models/user.model.js'
 import envConfig from './config/env.config.js'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -137,8 +136,7 @@ const start = async () => {
   try {
     await mongoose.connect(envConfig.mongo.uri)
     app.listen(port, () => {
-      logger.info(`[server]: Server is running at http://localhost:${port}`)
-      logger.info(`[server]: Documents is running at http://localhost:${port}/docs`)
+      logger.info(`Server is running at http://localhost:${port}`)
     })
   } catch (error) {
     console.error(error)

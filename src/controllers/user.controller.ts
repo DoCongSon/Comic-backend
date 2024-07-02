@@ -7,7 +7,7 @@ import pick from '../utils/pick.js'
 export class UserController {
   public getUsers = catchAsync(async (req: EXRequest, res: EXResponse) => {
     const filter = pick(req.query, ['name', 'role'])
-    const options = pick(req.query, ['sortBy', 'limit', 'page'])
+    const options = pick(req.query, ['sortBy', 'limit', 'page', 'populate'])
     const result = await userService.queryUsers(filter, options)
     res.status(httpStatus.OK).send(result)
   })
