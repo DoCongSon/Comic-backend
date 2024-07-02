@@ -19,6 +19,9 @@ export interface IUser extends Document {
     ruby: number
     achievements: ObjectId[]
   }
+  likes: ObjectId[]
+  history: ObjectId[]
+  saved: ObjectId[]
   isPasswordMatch: (password: string) => Promise<boolean>
 }
 
@@ -54,7 +57,10 @@ export const UserSchema = new Schema<IUser>(
       points: { type: 'Number', default: 0 },
       ruby: { type: 'Number', default: 100 },
       achievements: [{ type: Schema.Types.ObjectId, ref: 'Achievement' }]
-    }
+    },
+    likes: [{ type: Schema.Types.ObjectId, ref: 'Comic' }],
+    history: [{ type: Schema.Types.ObjectId, ref: 'Chapter' }],
+    saved: [{ type: Schema.Types.ObjectId, ref: 'Comic' }]
   },
   { timestamps: true }
 )
