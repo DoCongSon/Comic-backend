@@ -1,37 +1,28 @@
 import express from 'express'
-import auth from '../../middlewares/auth.middleware.js'
-import { AchievementController } from '../../controllers/achievement.controller.js'
+import { CategoryController } from '../../controllers/category.controller.js'
 import validate from '../../middlewares/validate.middleware.js'
-import AchievementValidation from '../../validations/achievement.validation.js'
-
-const controller = new AchievementController()
-
+import CategoryValidation from '../../validations/category.validation.js'
+import auth from '../../middlewares/auth.middleware.js'
 const router = express.Router()
 
-router.get('/', auth('GET_ACHIEVEMENTS'), validate(AchievementValidation.getAchievements), controller.getAchievements)
-router.get(
-  '/:achievementId',
-  auth('GET_ACHIEVEMENTS'),
-  validate(AchievementValidation.getAchievement),
-  controller.getAchievement
-)
-router.post(
-  '/',
-  auth('MANAGE_ACHIEVEMENTS'),
-  validate(AchievementValidation.createAchievement),
-  controller.createAchievement
-)
+const controller = new CategoryController()
+
+router.post('/get-categories-from-api', controller.getCategoriesFromApi)
+
+router.get('/', validate(CategoryValidation.getCategories), controller.getCategories)
+router.get('/:categoryId', validate(CategoryValidation.getCategory), controller.getCategory)
+router.post('/', auth('MANAGE_CATEGORIES'), validate(CategoryValidation.createCategory), controller.createCategory)
 router.put(
-  '/:achievementId',
-  auth('MANAGE_ACHIEVEMENTS'),
-  validate(AchievementValidation.updateAchievement),
-  controller.updateAchievement
+  '/:categoryId',
+  auth('MANAGE_CATEGORIES'),
+  validate(CategoryValidation.updateCategory),
+  controller.updateCategory
 )
 router.delete(
-  '/:achievementId',
-  auth('MANAGE_ACHIEVEMENTS'),
-  validate(AchievementValidation.deleteAchievement),
-  controller.deleteAchievement
+  '/:categoryId',
+  auth('MANAGE_CATEGORIES'),
+  validate(CategoryValidation.deleteCategory),
+  controller.deleteCategory
 )
 
 export default router
@@ -39,20 +30,18 @@ export default router
 /**
  * @swagger
  * tags:
- *   name: Achievements
- *   description: Achievements management and retrieval
+ *   name: Categories
+ *   description: Categories management and retrieval
  */
 
 /**
  * @swagger
- * /achievements:
+ * /categories:
  *   get:
- *     summary: Get all achievements
- *     description: Get all achievements
+ *     summary: Get all categories
+ *     description: Get all categories
  *     tags:
- *       - Achievements
- *     security:
- *       - bearerAuth: []
+ *       - Categories
  *     parameters:
  *       - in: query
  *         name: page
@@ -74,10 +63,10 @@ export default router
  *         name: name
  *         schema:
  *           type: string
- *         description: Filter by name
+ *         description: Category name
  *     responses:
  *       200:
- *         description: A list of achievements
+ *         description: A list of categories
  *         content:
  *           application/json:
  *             schema:
@@ -86,7 +75,7 @@ export default router
  *                 results:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/Achievement'
+ *                     $ref: '#/components/schemas/Category'
  *                 page:
  *                   type: integer
  *                   example: 1
@@ -103,34 +92,30 @@ export default router
  *         $ref: '#/components/responses/Unauthorized'
  *       403:
  *         $ref: '#/components/responses/Forbidden'
- *       404:
- *         $ref: '#/components/responses/NotFound'
  */
 
 /**
  * @swagger
- * /achievements/{achievementId}:
+ * /categories/{categoryId}:
  *   get:
- *     summary: Get an achievement
- *     description: Get an achievement by id
+ *     summary: Get a category
+ *     description: Get a category by id
  *     tags:
- *       - Achievements
- *     security:
- *       - bearerAuth: []
+ *       - Categories
  *     parameters:
  *       - in: path
- *         name: achievementId
+ *         name: categoryId
  *         schema:
  *           type: string
  *         required: true
- *         description: Achievement id
+ *         description: Category id
  *     responses:
  *       200:
- *         description: An achievement object
+ *         description: A category object
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Achievement'
+ *               $ref: '#/components/schemas/Category'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
  *       403:
@@ -141,12 +126,12 @@ export default router
 
 /**
  * @swagger
- * /achievements:
+ * /categories:
  *   post:
- *     summary: Create an achievement
- *     description: Create a new achievement
+ *     summary: Create a category
+ *     description: Create a new category
  *     tags:
- *       - Achievements
+ *       - Categories
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -158,20 +143,20 @@ export default router
  *             properties:
  *               name:
  *                 type: string
- *                 example: Achievement name
- *               description:
+ *                 example: Category name
+ *               slug:
  *                 type: string
- *                 example: Achievement description
- *             example:
- *               name: Achievement name
- *               description: Achievement description
+ *                 example: category-name
+ *           example:
+ *             name: Category name
+ *             slug: category-name
  *     responses:
  *       201:
- *         description: An achievement object
+ *         description: A category object
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Achievement'
+ *               $ref: '#/components/schemas/Category'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
  *       403:
@@ -180,21 +165,21 @@ export default router
 
 /**
  * @swagger
- * /achievements/{achievementId}:
+ * /categories/{categoryId}:
  *   put:
- *     summary: Update an achievement
- *     description: Update an achievement by id
+ *     summary: Update a category
+ *     description: Update a category by id
  *     tags:
- *       - Achievements
+ *       - Categories
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: achievementId
+ *         name: categoryId
  *         schema:
  *           type: string
  *         required: true
- *         description: Achievement id
+ *         description: Category id
  *     requestBody:
  *       required: true
  *       content:
@@ -204,45 +189,46 @@ export default router
  *             properties:
  *               name:
  *                 type: string
- *                 example: Achievement name
- *               description:
+ *                 example: Category name
+ *               slug:
  *                 type: string
- *                 example: Achievement description
+ *                 example: category-name
  *           example:
- *             name: Achievement name
- *             description: Achievement description
+ *             name: Category name
+ *             slug: category-name
  *     responses:
  *       200:
- *         description: An achievement object
+ *         description: A category object
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Achievement'
+ *               $ref: '#/components/schemas/Category'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
  *       403:
  *         $ref: '#/components/responses/Forbidden'
  *       404:
  *         $ref: '#/components/responses/NotFound'
+ *
  */
 
 /**
  * @swagger
- * /achievements/{achievementId}:
+ * /categories/{categoryId}:
  *   delete:
- *     summary: Delete an achievement
- *     description: Delete an achievement by id
+ *     summary: Delete a category
+ *     description: Delete a category by id
  *     tags:
- *       - Achievements
+ *       - Categories
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: achievementId
+ *         name: categoryId
  *         schema:
  *           type: string
  *         required: true
- *         description: Achievement id
+ *         description: Category id
  *     responses:
  *       204:
  *         description: No content

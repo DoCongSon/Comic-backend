@@ -5,6 +5,7 @@ import { Token } from '../models/token.model.js'
 import { tokenTypes } from '../enums/constants/token.constant.js'
 import * as tokenService from '../services/token.service.js'
 import * as userService from '../services/user.service.js'
+import { ObjectId } from 'mongoose'
 
 export const register = async (data: { email: string; password: string; name: string }) => {
   const { email, password, name } = data
@@ -71,11 +72,12 @@ export const resetPassword = async (resetPasswordToken: string) => {
  * @param {string} newPassword
  * @returns {Promise}
  */
-export const changePassword = async (resetPasswordToken: string, newPassword: string) => {
-  const resetPasswordTokenDoc = await tokenService.verifyToken(resetPasswordToken, tokenTypes.RESET_PASSWORD)
-  const user = await userService.getUserById(resetPasswordTokenDoc.user)
+export const changePassword = async (userId: ObjectId | string, oldPassword: string, newPassword: string) => {
+  const user = await userService.getUserById(userId)
+  if (!(await user.isPasswordMatch(oldPassword))) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect password')
+  }
   await userService.updateUserById(user.id, { password: newPassword })
-  await Token.deleteMany({ user: user.id, type: tokenTypes.RESET_PASSWORD })
 }
 
 /**

@@ -5,13 +5,14 @@ import { Options } from './plugins/paginate.plugin.js'
 export interface IChapter extends Document {
   comic: ObjectId
   chapter_name: string
-  chapter_title: string
   chapter_path: string
   chapter_images: {
     image_page: number
     image_file: string
   }[]
 }
+
+export type CreateChapter = Pick<IChapter, 'comic' | 'chapter_name' | 'chapter_path' | 'chapter_images'>
 
 interface IChapterModel extends Model<IChapter> {
   paginate: (filter: any, options: Options) => Promise<IChapter[]>
@@ -21,7 +22,6 @@ const ChapterSchema = new Schema<IChapter>(
   {
     comic: { type: Schema.Types.ObjectId, ref: 'Comic', required: true }, // Truyện tranh
     chapter_name: { type: String, required: true }, // Tên chapter
-    chapter_title: { type: String, required: true }, // Tiêu đề chapter
     chapter_path: { type: String, required: true }, // Đường dẫn chapter
     chapter_images: [
       {

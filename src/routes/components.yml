@@ -1,0 +1,210 @@
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        avatar:
+          type: string
+        verified:
+          type: boolean
+        role:
+          type: string
+          enum: [USER, ADMIN, USERVIP]
+        history:
+          type: array
+          items:
+            type: string
+        saved:
+          type: array
+          items:
+            type: string
+        likes:
+          type: array
+          items:
+            type: string
+        progress:
+          type: object
+          properties:
+            level:
+              type: number
+            levelName:
+              type: string
+            points:
+              type: number
+            ruby:
+              type: number
+            achievements:
+              type: array
+              items:
+                type: string
+      example:
+        id: 5ebac534954b54139806c112
+        email: fake@example.com
+        name: fake name
+        role: USER
+        verified: true
+        avatar: https://example.com/avatar.jpg
+        history: []
+        saved: []
+        likes: []
+        progress:
+          level: 1
+          levelName: Beginner
+          points: 0
+          ruby: 0
+          achievements: []
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+        expires:
+          type: string
+          format: date-time
+      example:
+        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1ZWJhYzUzNDk1NGI1NDEzOTgwNmMxMTIiLCJpYXQiOjE1ODkyOTg0ODQsImV4cCI6MTU4OTMwMDI4NH0.m1U63blB0MLej_WfB7yC2FTMnCziif9X8yzwDEfJXAg
+        expires: 2020-05-12T16:18:04.793Z
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+      example:
+        id: 5ebac534954b54139806c112
+        name: Category name
+        slug: category-name
+    Achievement:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+      example:
+        id: 5ebac534954b54139806c112
+        name: Achievement name
+        description: Achievement description
+    AuthTokens:
+      type: object
+      properties:
+        access:
+          $ref: '#/components/schemas/Token'
+        refresh:
+          $ref: '#/components/schemas/Token'
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        comic:
+          $ref: '#/components/schemas/Comic'
+        content:
+          type: string
+    Comic:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        vip:
+          type: boolean
+        origin_name:
+          type: array
+          items:
+            type: string
+        content:
+          type: string
+        status:
+          type: string
+          enum: [ongoing, completed]
+        thumb_url:
+          type: string
+        author:
+          type: array
+          items:
+            type: string
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+      example:
+        id: 5ebac534954b54139806c112
+        name: Comic name
+        slug: comic-name
+        vip: false
+        origin_name: ['Comic name']
+        content: Comic content
+        status: ongoing
+        thumb_url: https://example.com/thumb.jpg
+        author: ['Author name']
+        categories: [{ id: 5ebac534954b54139806c112, name: Category name, slug: category-name }]
+    Error:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+
+  responses:
+    DuplicateEmail:
+      description: Email already taken
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 400
+            message: Email already taken
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 401
+            message: Please authenticate
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 403
+            message: Forbidden
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 404
+            message: Not found
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

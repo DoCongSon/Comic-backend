@@ -1,4 +1,7 @@
-import { IViewOfDate } from 'src/models/view.modal.js'
+import httpStatus from 'http-status'
+import ApiError from '../utils/ApiError.js'
+import { ObjectId } from 'mongoose'
+import { CreateViewOfDate, View } from '../models/view.model.js'
 
 type DateKey = 'day' | 'week' | 'month'
 
@@ -34,10 +37,10 @@ const compareDates = (date1: Date, date2: Date, dateKey: DateKey) => {
  * If a view for the current date already exists, increments the view count.
  * Otherwise, adds a new view entry for the current date with a view count of 1.
  *
- * @param {IViewOfDate[]} viewsArray - The array of views to update.
+ * @param {CreateViewOfDate[]} viewsArray - The array of views to update.
  * @param {DateKey} dateKey - The date key used for comparing dates.
  */
-const updateViews = (viewsArray: IViewOfDate[], dateKey: DateKey) => {
+const updateView = (viewsArray: CreateViewOfDate[], dateKey: DateKey) => {
   const currentDate = new Date()
   const currentView = viewsArray.find((view) => {
     const viewDate = new Date(view.date)
@@ -49,3 +52,18 @@ const updateViews = (viewsArray: IViewOfDate[], dateKey: DateKey) => {
     viewsArray.push({ date: currentDate, views: 1 })
   }
 }
+
+const createViewForComic = async (comicId: ObjectId | string) => {
+  const view = await getViewByComicId(comicId)
+  if (view) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'View already exists for comic')
+  }
+  return View.create({ comic: comicId })
+}
+
+const getViewByComicId = async (comicId: ObjectId | string) => {
+  const view = await View.findOne({ comic: comicId })
+  return view
+}
+
+export { updateView, createViewForComic, getViewByComicId }

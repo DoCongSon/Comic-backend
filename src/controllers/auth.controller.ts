@@ -58,7 +58,7 @@ export class AuthController {
   })
 
   public changePassword = catchAsync(async (req: Request, res: Response) => {
-    await authService.changePassword(req.body.refreshTokens, req.body.newPassword)
+    await authService.changePassword((req.user as IUser)?.id, req.body.oldPassword, req.body.newPassword)
     res.status(httpStatus.NO_CONTENT).send()
   })
 
