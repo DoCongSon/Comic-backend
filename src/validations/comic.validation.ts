@@ -76,8 +76,10 @@ const getChapter: SchemaValidator = {
 }
 
 const createChapter: SchemaValidator = {
+  params: Joi.object().keys({
+    comicId: Joi.string().required()
+  }),
   body: Joi.object().keys({
-    comic: Joi.string().required(),
     chapter_name: Joi.string().required(),
     chapter_path: Joi.string().required(),
     chapter_images: Joi.array()
@@ -97,7 +99,6 @@ const updateChapter: SchemaValidator = {
     chapterId: Joi.string().required()
   }),
   body: Joi.object().keys({
-    comic: Joi.string().required(),
     chapter_name: Joi.string().required(),
     chapter_path: Joi.string().required(),
     chapter_images: Joi.array()

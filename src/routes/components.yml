@@ -104,7 +104,32 @@ components:
           $ref: '#/components/schemas/Token'
         refresh:
           $ref: '#/components/schemas/Token'
-
+    Chapter:
+      type: object
+      properties:
+        id:
+          type: string
+        comic:
+          $ref: '#/components/schemas/Comic'
+        chapter_name:
+          type: string
+        chapter_path:
+          type: string
+        chapter_images:
+          type: array
+          items:
+            type: object
+            properties:
+              image_page:
+                type: number
+              image_file:
+                type: string
+      example:
+        id: 5ebac534954b54139806c112
+        comic: 4ac3c534954b54139806c112
+        chapter_name: Chapter name
+        chapter_path: https://example.com/chapter
+        chapter_images: [{ image_page: 1, image_file: image.jpg }]
     Comment:
       type: object
       properties:
