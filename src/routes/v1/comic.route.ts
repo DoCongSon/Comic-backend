@@ -17,26 +17,26 @@ router.get('/:slug', validate(ComicValidation.getComicBySlug), controller.getCom
 router.put('/:comicId', auth('MANAGE_COMICS'), validate(ComicValidation.updateComic), controller.updateComic)
 router.delete('/:comicId', auth('MANAGE_COMICS'), validate(ComicValidation.deleteComic), controller.deleteComic)
 
-// router.get('/:comicId/chapters', validate(ComicValidation.getChapters), controller.getChapters)
-// router.post(
-//   '/:comicId/chapters',
-//   auth('MANAGE_COMICS'),
-//   validate(ComicValidation.createChapter),
-//   controller.createChapter
-// )
-// router.get('/:comicId/chapters/:chapterId', validate(ComicValidation.getChapter), controller.getChapter)
-// router.put(
-//   '/:comicId/chapters/:chapterId',
-//   auth('MANAGE_COMICS'),
-//   validate(ComicValidation.updateChapter),
-//   controller.updateChapter
-// )
-// router.delete(
-//   '/:comicId/chapters/:chapterId',
-//   auth('MANAGE_COMICS'),
-//   validate(ComicValidation.deleteChapter),
-//   controller.deleteChapter
-// )
+router.get('/:comicId/chapters', validate(ComicValidation.getChapters), controller.getChapters)
+router.post(
+  '/:comicId/chapters',
+  auth('MANAGE_COMICS'),
+  validate(ComicValidation.createChapter),
+  controller.createChapter
+)
+router.get('/:comicId/chapters/:chapterId', validate(ComicValidation.getChapter), controller.getChapter)
+router.put(
+  '/:comicId/chapters/:chapterId',
+  auth('MANAGE_COMICS'),
+  validate(ComicValidation.updateChapter),
+  controller.updateChapter
+)
+router.delete(
+  '/:comicId/chapters/:chapterId',
+  auth('MANAGE_COMICS'),
+  validate(ComicValidation.deleteChapter),
+  controller.deleteChapter
+)
 
 export default router
 
@@ -328,6 +328,243 @@ export default router
  *           type: string
  *         required: true
  *         description: Comic id
+ *     responses:
+ *       204:
+ *         description: No content
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /comics/{comicId}/chapters:
+ *   get:
+ *     summary: Get chapters
+ *     description: Get all chapters of a comic
+ *     tags:
+ *       - Comics
+ *     parameters:
+ *       - in: path
+ *         name: comicId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Comic id
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of items per page
+ *     responses:
+ *       200:
+ *         description: A list of chapters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Chapter'
+ *                 page:
+ *                   type: integer
+ *                   example: 1
+ *                 limit:
+ *                   type: integer
+ *                   example: 10
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 1
+ *                 totalResults:
+ *                   type: integer
+ *                   example: 1
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /comics/{comicId}/chapters:
+ *   post:
+ *     summary: Create chapter
+ *     description: Create a new chapter of a comic
+ *     tags:
+ *       - Comics
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: comicId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Comic id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               chapter_name:
+ *                 type: number
+ *               chapter_path:
+ *                 type: string
+ *               chapter_images:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     image_page:
+ *                       type: number
+ *                     image_file:
+ *                       type: string
+ *           example:
+ *             chapter_name: 1
+ *             chapter_path: https://chapter-path.com
+ *             chapter_images: [{image_page: 1, image_file: https://image-file.com}]
+ *     responses:
+ *       201:
+ *         description: A chapter object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Chapter'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /comics/{comicId}/chapters/{chapterId}:
+ *   get:
+ *     summary: Get chapter
+ *     description: Get a chapter by id
+ *     tags:
+ *       - Comics
+ *     parameters:
+ *       - in: path
+ *         name: comicId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Comic id
+ *       - in: path
+ *         name: chapterId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Chapter id
+ *     responses:
+ *       200:
+ *         description: A chapter object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Chapter'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /comics/{comicId}/chapters/{chapterId}:
+ *   put:
+ *     summary: Update chapter
+ *     description: Update a chapter by id
+ *     tags:
+ *       - Comics
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: comicId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Comic id
+ *       - in: path
+ *         name: chapterId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Chapter id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               chapter_name:
+ *                 type: number
+ *               chapter_path:
+ *                 type: string
+ *               chapter_images:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     image_page:
+ *                       type: number
+ *                     image_file:
+ *                       type: string
+ *           example:
+ *             chapter_name: 1
+ *             chapter_path: https://chapter-path.com
+ *             chapter_images: [{image_page: 1, image_file: https://image-file.com}]
+ *     responses:
+ *       200:
+ *         description: A chapter object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Chapter'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /comics/{comicId}/chapters/{chapterId}:
+ *   delete:
+ *     summary: Delete chapter
+ *     description: Delete a chapter by id
+ *     tags:
+ *       - Comics
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: comicId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Comic id
+ *       - in: path
+ *         name: chapterId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Chapter id
  *     responses:
  *       204:
  *         description: No content

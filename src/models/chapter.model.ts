@@ -4,7 +4,7 @@ import { Options } from './plugins/paginate.plugin.js'
 
 export interface IChapter extends Document {
   comic: ObjectId
-  chapter_name: string
+  chapter_name: number
   chapter_path: string
   chapter_images: {
     image_page: number
@@ -21,7 +21,7 @@ interface IChapterModel extends Model<IChapter> {
 const ChapterSchema = new Schema<IChapter>(
   {
     comic: { type: Schema.Types.ObjectId, ref: 'Comic', required: true }, // Truyện tranh
-    chapter_name: { type: String, required: true }, // Tên chapter
+    chapter_name: { type: Number, required: true }, // Tên chapter
     chapter_path: { type: String, required: true }, // Đường dẫn chapter
     chapter_images: [
       {

@@ -77,7 +77,7 @@ const getComicsFromApi = async (slugs: string) => {
             const chapterNames = alreadyTakenComicChapters.map((chapter) => chapter.chapter_name)
             // chapters
             const chapterLinks: string[] = comic.data?.item?.chapters[0]?.server_data
-              .filter((chapter: { chapter_name: string }) => !chapterNames.includes(chapter.chapter_name))
+              .filter((chapter: { chapter_name: number }) => !chapterNames.includes(chapter.chapter_name))
               .map((chapter: { chapter_api_data: string }) => chapter.chapter_api_data)
 
             const promises = chapterLinks.map((link) => fetch(link))
@@ -144,7 +144,7 @@ const getComicsFromApi = async (slugs: string) => {
             const path = `${chapter.data?.domain_cdn}/${chapter.data?.item?.chapter_path}`
             const newChapter: CreateChapter = {
               comic: comicCreated?._id as ObjectId,
-              chapter_name: chapter.data?.item?.chapter_name,
+              chapter_name: Number(chapter.data?.item?.chapter_name),
               chapter_path: path,
               chapter_images: chapter.data?.item?.chapter_image
             }
