@@ -1,7 +1,15 @@
 const allRoles = {
-  user: [],
-  userPremium: [],
-  admin: ['GET_USERS', 'MANAGE_USERS']
+  USER: [],
+  USERVIP: ['VIP'],
+  ADMIN: [
+    'GET_USERS',
+    'MANAGE_USERS',
+    'GET_ACHIEVEMENTS',
+    'MANAGE_ACHIEVEMENTS',
+    'MANAGE_COMICS',
+    'MANAGE_COMMENTS',
+    'MANAGE_CATEGORIES'
+  ]
 }
 
 const rolesConfig = Object.keys(allRoles)

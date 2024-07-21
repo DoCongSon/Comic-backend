@@ -32,10 +32,11 @@ const paginate = (schema: Schema) => {
     let docsPromise = this.find(filter).sort(sort).skip(skip).limit(limit)
 
     if (options.populate) {
+      // progress.achievements>fieldsOfAchievements - populate nested fields
       options.populate.split(',').forEach((populateOption: string) => {
         let populateObj = {}
         populateOption
-          .split('.')
+          .split('>')
           .reverse()
           .forEach((item: string, index: number, arr: string[]) => {
             populateObj = index === 0 ? { path: item } : { path: arr[index - 1], populate: populateObj }

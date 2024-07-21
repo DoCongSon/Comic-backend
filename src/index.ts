@@ -1,6 +1,7 @@
 import express, { Express, NextFunction, Request, Response } from 'express'
+import { fileURLToPath } from 'url'
+import path, { dirname } from 'path'
 import morgan from 'morgan'
-import dotenv from 'dotenv'
 import cors from 'cors'
 import passport from 'passport'
 import helmet from 'helmet'
@@ -8,22 +9,25 @@ import session from 'express-session'
 import swaggerUi from 'swagger-ui-express'
 import httpStatus from 'http-status'
 import mongoose from 'mongoose'
-import * as process from 'node:process'
-import { jwtStrategy } from './config/passport.config.js'
+import { googleStrategy, jwtStrategy } from './config/passport.config.js'
 import router from './routes/index.js'
 import { errorConverter, errorHandler } from './middlewares/error.middleware.js'
 import ApiError from './utils/ApiError.js'
 import { authLimiter } from './middlewares/rateLimiter.middleware.js'
 import logger from './config/logger.config.js'
+import envConfig from './config/env.config.js'
+import { swaggerDocs } from './config/swagger.config.js'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const app: Express = express()
-dotenv.config()
-const port = process.env.PORT || 3000
+const port = envConfig.port
 
 // session
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || 'secret',
+    secret: envConfig.session.secret,
     resave: false,
     saveUninitialized: true
   })
@@ -51,23 +55,20 @@ app.use(express.urlencoded({ extended: true }))
 app.use(morgan('tiny'))
 app.use(express.static('public'))
 
-// jwt authentication
+// set view engine
+app.set('view engine', 'ejs')
+app.set('views', path.join(__dirname, 'views'))
+
+// passport middleware
 app.use(passport.initialize())
 passport.use('jwt', jwtStrategy)
+passport.use('google', googleStrategy)
 
 // swagger docs
-app.use(
-  '/docs',
-  swaggerUi.serve,
-  swaggerUi.setup(undefined, {
-    swaggerOptions: {
-      url: 'docs/swagger.json'
-    }
-  })
-)
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 
 // limit repeated failed requests to auth endpoints
-if (process.env.NODE_ENV === 'production') {
+if (envConfig.env === 'production') {
   app.use('/v1/auth', authLimiter)
 }
 
@@ -84,10 +85,9 @@ app.use(errorHandler)
 
 const start = async () => {
   try {
-    await mongoose.connect(`${process.env.MONGO_URI}`)
-    app.listen(port, () => {
-      logger.info(`[server]: Server is running at http://localhost:${port}`)
-      logger.info(`[server]: Documents is running at http://localhost:${port}/docs`)
+    await mongoose.connect(envConfig.mongo.uri)
+    const server = app.listen(port, () => {
+      logger.info(`Server is running at http://localhost:${port}`)
     })
   } catch (error) {
     console.error(error)

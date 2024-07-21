@@ -3,7 +3,7 @@ POST localhost:3000/api/v1/auth/register
 Content-Type: application/json
 
 {
-  "email": "user1@test.com",
+  "email": "user2@test.com",
   "password": "password123",
   "name": "John"
 }
@@ -15,7 +15,7 @@ Content-Type: application/json
 
 {
   "email": "user@test.com",
-  "password": "password123"
+  "password": "S92mw0eoPC"
 }
 
 ### POST request to logout
@@ -23,6 +23,17 @@ POST localhost:3000/api/v1/auth/logout
 Content-Type: application/json
 
 {
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY1YTk2OGM3NjRjMzRkZGU0ZTJlNWQiLCJpYXQiOjE3MTc5NDc1NjUsImV4cCI6MTcyMDUzOTU2NSwidHlwZSI6IlJFRlJFU0gifQ.G-_6VsBXpdAB9pVdPhWCVRidvBMyb5bpb7J4c99RdJQ"
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY1YTk2OGM3NjRjMzRkZGU0ZTJlNWQiLCJpYXQiOjE3MTgyMDY2MjUsImV4cCI6MTcyMDc5ODYyNSwidHlwZSI6IlJFRlJFU0gifQ.uSXzW9lZuTbbY0cJ7JpecqGwx2IRhSH5X2OyTIPJlvU"
 }
 
+### POST request to send verification email
+POST localhost:3000/api/v1/auth/send-verification-email
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY1YTk2OGM3NjRjMzRkZGU0ZTJlNWQiLCJpYXQiOjE3MTgyMDQ2MDEsImV4cCI6MTcxODIwNjQwMSwidHlwZSI6IkFDQ0VTUyJ9._MnokAz170RvKcZU2Ao9F-7wZLaNppAHRiT4RbAuVmc
+
+### POST request to forgot password
+POST localhost:3000/api/v1/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "user@test.com"
+}

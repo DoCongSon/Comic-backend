@@ -1,22 +1,34 @@
-import { Model, model, Schema, Types, Document } from 'mongoose'
+import { Model, model, Schema, ObjectId, Document } from 'mongoose'
 import bcrypt from 'bcrypt'
 import { toJSON, paginate } from './plugins/index.js'
 import { Options } from './plugins/paginate.plugin.js'
 import { userRoles } from '../enums/constants/user.constant.js'
+import { levelNames } from '../enums/constants/level.constant.js'
 
 export interface IUser extends Document {
   email: string
   password: string
   name: string
+  avatar: string
   verified: boolean
   role: string
+  progress: {
+    level: number
+    levelName: string
+    points: number
+    ruby: number
+    achievements: ObjectId[]
+  }
+  likes: ObjectId[]
+  history: ObjectId[]
+  saved: ObjectId[]
   isPasswordMatch: (password: string) => Promise<boolean>
 }
 
-export type CreateUser = Omit<IUser, 'isPasswordMatch'>
+export type CreateUser = Pick<IUser, 'email' | 'password' | 'name'> & Partial<Pick<IUser, 'role' | 'avatar'>>
 
 interface IUserModel extends Model<IUser> {
-  isEmailTaken: (this: Model<IUser>, email: string, excludeUserId?: Types.ObjectId) => Promise<boolean>
+  isEmailTaken: (this: Model<IUser>, email: string, excludeUserId?: ObjectId | string) => Promise<boolean>
   isPasswordMatch: (password: string) => Promise<boolean>
   paginate: (filter: any, options: Options) => Promise<IUser[]>
 }
@@ -32,12 +44,23 @@ export const UserSchema = new Schema<IUser>(
     },
     password: { type: 'String', required: true, private: true },
     name: { type: 'String', required: true },
+    avatar: { type: 'String', required: true, default: 'https://ui-avatars.com/api/?name=User' },
     verified: { type: 'Boolean', default: false },
     role: {
       type: 'String',
       enum: [...Object.values(userRoles)],
       default: userRoles.USER
-    }
+    },
+    progress: {
+      level: { type: 'Number', default: 0 },
+      levelName: { type: 'String', default: levelNames[0], enum: levelNames },
+      points: { type: 'Number', default: 0 },
+      ruby: { type: 'Number', default: 100 },
+      achievements: [{ type: Schema.Types.ObjectId, ref: 'Achievement' }]
+    },
+    likes: [{ type: Schema.Types.ObjectId, ref: 'Comic' }],
+    history: [{ type: Schema.Types.ObjectId, ref: 'Chapter' }],
+    saved: [{ type: Schema.Types.ObjectId, ref: 'Comic' }]
   },
   { timestamps: true }
 )
@@ -55,7 +78,7 @@ UserSchema.plugin(paginate)
 UserSchema.statics.isEmailTaken = async function (
   this: Model<IUser>,
   email: string,
-  excludeUserId?: Types.ObjectId
+  excludeUserId?: ObjectId | string
 ): Promise<boolean> {
   const user = await this.findOne({ email, _id: { $ne: excludeUserId } })
   return !!user

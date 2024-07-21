@@ -1,7 +1,8 @@
 import Joi from 'joi'
 import { password } from './customs.validation.js'
+import { SchemaValidator } from '../middlewares/validate.middleware.js'
 
-const register = {
+const register: SchemaValidator = {
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().custom(password),
@@ -9,48 +10,52 @@ const register = {
   })
 }
 
-const login = {
+const login: SchemaValidator = {
   body: Joi.object().keys({
     email: Joi.string().required(),
     password: Joi.string().required()
   })
 }
 
-const logout = {
+const google: SchemaValidator = {
+  query: Joi.object().keys({
+    return: Joi.string().required()
+  })
+}
+
+const logout: SchemaValidator = {
   body: Joi.object().keys({
     refreshToken: Joi.string().required()
   })
 }
 
-const refreshTokens = {
+const refreshTokens: SchemaValidator = {
   body: Joi.object().keys({
     refreshToken: Joi.string().required()
   })
 }
 
-const forgotPassword = {
+const forgotPassword: SchemaValidator = {
   body: Joi.object().keys({
     email: Joi.string().email().required()
   })
 }
 
-const resetPassword = {
+const resetPassword: SchemaValidator = {
   query: Joi.object().keys({
-    token: Joi.string().required()
+    token: Joi.string().required(),
+    email: Joi.string().email().required()
   })
-  // body: Joi.object().keys({
-  //   password: Joi.string().required().custom(password),
-  // }),
 }
 
-const changePassword = {
+const changePassword: SchemaValidator = {
   body: Joi.object().keys({
     oldPassword: Joi.string().required(),
     newPassword: Joi.string().required().custom(password)
   })
 }
 
-const verifyEmail = {
+const verifyEmail: SchemaValidator = {
   query: Joi.object().keys({
     token: Joi.string().required()
   })
@@ -59,6 +64,7 @@ const verifyEmail = {
 export default {
   register,
   login,
+  google,
   logout,
   refreshTokens,
   forgotPassword,
