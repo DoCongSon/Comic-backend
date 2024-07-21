@@ -26,7 +26,7 @@ const swaggerOptions: Options = {
         description: 'Development server'
       },
       {
-        url: `http://product/api/v1`,
+        url: `https://comic-backend.onrender.com/api/v1`,
         description: 'Production'
       }
     ]
