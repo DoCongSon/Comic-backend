@@ -91,3 +91,8 @@ export const verifyEmail = async (verifyEmailToken: string) => {
   await Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL })
   await userService.updateUserById(user.id, { verified: true })
 }
+
+export const updateProfile = async (userId: ObjectId | string, updateBody: { name: string; email: string }) => {
+  const user = await userService.updateUserById(userId, updateBody)
+  return user
+}

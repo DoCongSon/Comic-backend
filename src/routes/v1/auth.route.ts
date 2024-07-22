@@ -28,6 +28,7 @@ router.get(
   passport.authenticate('google', { session: false, failureRedirect: '/' }),
   controller.google
 )
+router.post('/update-profile', auth(), validate(AuthValidation.updateProfile), controller.updateProfile)
 
 export default router
 
@@ -356,6 +357,48 @@ export default router
  *               $ref: '#/components/schemas/User'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
+ */
+
+/**
+ * @swagger
+ * /auth/update-profile:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     description: Update profile
+ *     produces:
+ *       - application/json
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               avatar:
+ *                 type: string
+ *             example:
+ *               name: 'John'
+ *               email: 'fakeemail@gmail.com'
+ *               avatar: 'https://example.com/new-avatar.jpg'
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
  */
 
 /**
