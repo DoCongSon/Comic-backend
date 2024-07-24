@@ -61,6 +61,14 @@ const verifyEmail: SchemaValidator = {
   })
 }
 
+const updateProfile: SchemaValidator = {
+  body: Joi.object().keys({
+    name: Joi.string(),
+    email: Joi.string().email(),
+    avatar: Joi.string()
+  })
+}
+
 export default {
   register,
   login,
@@ -70,5 +78,6 @@ export default {
   forgotPassword,
   resetPassword,
   changePassword,
-  verifyEmail
+  verifyEmail,
+  updateProfile
 }

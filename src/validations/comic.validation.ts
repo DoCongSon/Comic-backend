@@ -8,7 +8,7 @@ const createComic: SchemaValidator = {
     vip: Joi.boolean().required(),
     origin_name: Joi.array().items(Joi.string()).required(),
     content: Joi.string().required(),
-    status: Joi.string().required(),
+    status: Joi.string().required().valid('coming_soon', 'completed', 'ongoing'),
     thumb_url: Joi.string().required(),
     author: Joi.array().items(Joi.string()).required(),
     category: Joi.array().items(Joi.string()).required()
@@ -44,15 +44,15 @@ const updateComic: SchemaValidator = {
     comicId: Joi.string().required()
   }),
   body: Joi.object().keys({
-    name: Joi.string().required(),
-    slug: Joi.string().required(),
-    vip: Joi.boolean().required(),
-    origin_name: Joi.array().items(Joi.string()).required(),
-    content: Joi.string().required(),
-    status: Joi.string().required(),
-    thumb_url: Joi.string().required(),
-    author: Joi.array().items(Joi.string()).required(),
-    category: Joi.array().items(Joi.string()).required()
+    name: Joi.string(),
+    slug: Joi.string(),
+    vip: Joi.boolean(),
+    origin_name: Joi.array().items(Joi.string()),
+    content: Joi.string(),
+    status: Joi.string().valid('coming_soon', 'completed', 'ongoing'),
+    thumb_url: Joi.string(),
+    author: Joi.array().items(Joi.string()),
+    category: Joi.array().items(Joi.string())
   })
 }
 
@@ -80,7 +80,7 @@ const createChapter: SchemaValidator = {
     comicId: Joi.string().required()
   }),
   body: Joi.object().keys({
-    chapter_name: Joi.string().required(),
+    chapter_name: Joi.number().required(),
     chapter_path: Joi.string().required(),
     chapter_images: Joi.array()
       .items(
@@ -99,7 +99,7 @@ const updateChapter: SchemaValidator = {
     chapterId: Joi.string().required()
   }),
   body: Joi.object().keys({
-    chapter_name: Joi.string().required(),
+    chapter_name: Joi.number().required(),
     chapter_path: Joi.string().required(),
     chapter_images: Joi.array()
       .items(

@@ -78,4 +78,9 @@ export class AuthController {
     await mailService.sendVerificationEmail(req.body.email, verifyEmailToken)
     res.status(httpStatus.NO_CONTENT).send()
   })
+
+  public updateProfile = catchAsync(async (req: Request, res: Response) => {
+    const user = await authService.updateProfile((req.user as IUser).id, req.body)
+    res.status(httpStatus.OK).send(user)
+  })
 }

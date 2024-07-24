@@ -34,7 +34,7 @@ const ComicSchema = new Schema<IComic>(
     slug: { type: String, required: true, unique: true }, // Tên không dấu
     origin_name: { type: [String], default: [] }, // Tên gốc
     content: { type: String, default: '' }, // Nội dung
-    status: { type: String, default: 'Đang cập nhật' }, // Trạng thái
+    status: { type: String, enum: ['coming_soon', 'completed', 'ongoing'] }, // Trạng thái
     thumb_url: { type: String, default: '' }, // Ảnh bìa
     author: { type: [String], default: [] }, // Tác giả
     category: [{ type: Schema.Types.ObjectId, ref: 'Category' }], // Thể loại
