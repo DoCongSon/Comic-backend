@@ -81,7 +81,7 @@ export default router
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/AuthTokens'
- *       400:
+ *       422:
  *         $ref: '#/components/responses/DuplicateEmail'
  */
 
@@ -120,7 +120,7 @@ export default router
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/AuthTokens'
- *       401:
+ *       422:
  *         description: Invalid email or password
  *         content:
  *           application/json:

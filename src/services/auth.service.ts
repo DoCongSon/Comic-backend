@@ -10,7 +10,7 @@ import { ObjectId } from 'mongoose'
 export const register = async (data: { email: string; password: string; name: string }) => {
   const { email, password, name } = data
   if (await User.isEmailTaken(email)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken')
+    throw new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Email already taken')
   }
   const user = await User.create({ email, password, name })
   return user
@@ -20,7 +20,7 @@ export const loginWithEmailAndPassword = async (data: { email: string; password:
   const { email, password } = data
   const user = await User.findOne({ email })
   if (!user || !(await user.isPasswordMatch(password))) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password')
+    throw new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Incorrect email or password')
   }
   return user
 }
@@ -75,7 +75,7 @@ export const resetPassword = async (resetPasswordToken: string) => {
 export const changePassword = async (userId: ObjectId | string, oldPassword: string, newPassword: string) => {
   const user = await userService.getUserById(userId)
   if (!(await user.isPasswordMatch(oldPassword))) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect password')
+    throw new ApiError(httpStatus.UNPROCESSABLE_ENTITY, 'Incorrect password')
   }
   await userService.updateUserById(user.id, { password: newPassword })
 }
