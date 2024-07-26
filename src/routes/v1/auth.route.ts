@@ -128,7 +128,7 @@ export default router
  *               $ref: '#/components/schemas/Error'
  *             example:
  *               message: Invalid email or password
- *               code: 401
+ *               code: 422
  */
 
 /**
