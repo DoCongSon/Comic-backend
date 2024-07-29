@@ -17,22 +17,16 @@ const createComic: SchemaValidator = {
 
 const getComic: SchemaValidator = {
   params: Joi.object().keys({
-    comicId: Joi.string().required()
-  })
-}
-
-const getComicBySlug: SchemaValidator = {
-  params: Joi.object().keys({
-    slug: Joi.string().required()
+    comicIdOrSlug: Joi.string().required()
   })
 }
 
 const getComics: SchemaValidator = {
   query: Joi.object().keys({
-    name: Joi.string(),
     status: Joi.string(),
+    vip: Joi.string(),
+    name: Joi.string(),
     category: Joi.string(),
-    author: Joi.string(),
     sortBy: Joi.string(),
     limit: Joi.number().integer(),
     page: Joi.number().integer()
@@ -122,7 +116,6 @@ const deleteChapter: SchemaValidator = {
 export default {
   createComic,
   getComic,
-  getComicBySlug,
   getComics,
   updateComic,
   deleteComic,

@@ -22,8 +22,16 @@ export type CreateComic = Pick<
   'name' | 'vip' | 'slug' | 'origin_name' | 'content' | 'status' | 'thumb_url' | 'author' | 'category' | 'likes'
 >
 
+type PaginateComic = {
+  results: IComic[]
+  page: number
+  limit: number
+  totalPages: number
+  totalResults: number
+}
+
 interface IComicModel extends Model<IComic> {
-  paginate: (filter: any, options: Options) => Promise<IComic[]>
+  paginate: (filter: any, options: Options) => Promise<PaginateComic>
   isSlugTaken: (slug: string, excludeComicId?: ObjectId | string) => Promise<boolean>
 }
 

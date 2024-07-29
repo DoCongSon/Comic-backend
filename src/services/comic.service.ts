@@ -1,7 +1,7 @@
 import httpStatus from 'http-status'
 import ApiError from '../utils/ApiError.js'
 import { Comic, type CreateComic } from '../models/comic.model.js'
-import { type ObjectId } from 'mongoose'
+import { isValidObjectId, type ObjectId } from 'mongoose'
 import { type Options } from '../models/plugins/paginate.plugin.js'
 import { createChapter, getChaptersByComicId } from './chapter.service.js'
 import { CreateChapter } from '../models/chapter.model.js'
@@ -14,29 +14,63 @@ const createComic = async (comicBody: CreateComic) => {
   return Comic.create(comicBody)
 }
 
-const getComicById = async (comicId: ObjectId | string) => {
-  const comic = await Comic.findById(comicId)
+const getComicByIdOrSlug = async (comicIdOrSlug: ObjectId | string) => {
+  let comic = await Comic.findOne({ slug: comicIdOrSlug }).populate('category')
+  if (!comic && isValidObjectId(comicIdOrSlug)) {
+    comic = await Comic.findById(comicIdOrSlug).populate('category')
+  }
   if (!comic) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Comic not found')
   }
-  return comic
-}
 
-const getComicBySlug = async (slug: string) => {
-  const comic = await Comic.findOne({ slug })
-  if (!comic) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Comic not found')
+  const chapters = await getChaptersByComicId(comic._id as ObjectId)
+
+  return {
+    ...comic.toJSON(),
+    chapters: chapters
+      .map(({ chapter_name, id }) => ({ chapter_name, id }))
+      .sort((a, b) => a.chapter_name - b.chapter_name)
   }
-  return comic
 }
 
-const queryComics = async (filter: any, options: Options) => {
-  const comics = await Comic.paginate(filter, options)
+const queryComics = async ({
+  filter,
+  options,
+  name,
+  category
+}: {
+  filter: any
+  options: Options
+  name?: string
+  category?: string
+}) => {
+  if (name || category) {
+    options.limit = 9999
+    options.page = 1
+  }
+  const comics = await Comic.paginate(filter, { ...options, populate: 'category' })
+  if (name) {
+    comics.results = comics.results.filter((comic) => comic.name.toLowerCase().includes((name as string).toLowerCase()))
+    comics.totalResults = comics.results.length
+  }
+  if (category) {
+    comics.results = comics.results.filter((comic) => {
+      const categorySlugs = comic.category.map(({ slug }: any) => slug)
+      return categorySlugs.includes(category as string)
+    })
+    comics.totalResults = comics.results.length
+  }
   return comics
 }
 
 const updateComicById = async (comicId: ObjectId | string, updateBody: CreateComic) => {
-  const comic = await getComicById(comicId)
+  let comic = null
+  if (isValidObjectId(comicId)) {
+    comic = await Comic.findById(comicId).populate('category')
+  }
+  if (!comic) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Comic not found')
+  }
   if (updateBody.slug && (await Comic.isSlugTaken(updateBody.slug, comicId))) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Slug is already taken')
   }
@@ -46,7 +80,13 @@ const updateComicById = async (comicId: ObjectId | string, updateBody: CreateCom
 }
 
 const deleteComicById = async (comicId: ObjectId | string) => {
-  const comic = await getComicById(comicId)
+  let comic = null
+  if (isValidObjectId(comicId)) {
+    comic = await Comic.findById(comicId).populate('category')
+  }
+  if (!comic) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Comic not found')
+  }
   await comic.deleteOne()
   return comic
 }
@@ -168,4 +208,4 @@ const getComicsFromApi = async (slugs: string) => {
   }
 }
 
-export { getComicsFromApi, createComic, getComicById, getComicBySlug, queryComics, updateComicById, deleteComicById }
+export { getComicsFromApi, createComic, getComicByIdOrSlug, queryComics, updateComicById, deleteComicById }

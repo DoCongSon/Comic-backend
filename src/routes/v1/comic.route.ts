@@ -12,8 +12,7 @@ router.post('/get-comics-from-api', controller.getComicsFromApi)
 
 router.get('/', validate(ComicValidation.getComics), controller.getComics)
 router.post('/', auth('MANAGE_COMICS'), validate(ComicValidation.createComic), controller.createComic)
-router.get('/:comicId', validate(ComicValidation.getComic), controller.getComic)
-router.get('/:slug', validate(ComicValidation.getComicBySlug), controller.getComicBySlug)
+router.get('/:comicIdOrSlug', validate(ComicValidation.getComic), controller.getComic)
 router.put('/:comicId', auth('MANAGE_COMICS'), validate(ComicValidation.updateComic), controller.updateComic)
 router.delete('/:comicId', auth('MANAGE_COMICS'), validate(ComicValidation.deleteComic), controller.deleteComic)
 
@@ -71,28 +70,31 @@ export default router
  *         schema:
  *           type: string
  *         description: Sort by field
- *         example: name:asc
+ *         example: like:desc
+ *       - in: query
+ *         name: vip
+ *         schema:
+ *           type: boolean | 1 | 0
+ *           enum: [true, false, 1, 0]
+ *         description: Comic vip status
+ *         example: false
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [coming_soon, completed, ongoing]
+ *         description: Comic status
+ *         example: ongoing
  *       - in: query
  *         name: name
  *         schema:
  *           type: string
  *         description: Comic name
  *       - in: query
- *         name: status
- *         schema:
- *           type: string
- *         description: Comic status
- *         example: ongoing
- *       - in: query
  *         name: category
  *         schema:
  *           type: string
- *         description: Comic category
- *       - in: query
- *         name: author
- *         schema:
- *           type: string
- *         description: Comic author
+ *         description: Comic category slug
  *     responses:
  *       200:
  *         description: A list of comics
@@ -186,55 +188,29 @@ export default router
 
 /**
  * @swagger
- * /comics/{comicId}:
+ * /comics/{comicIdOrSlug}:
  *   get:
  *     summary: Get comic
- *     description: Get a comic by id
+ *     description: Get a comic by id or slug
  *     tags:
  *       - Comics
  *     parameters:
  *       - in: path
- *         name: comicId
+ *         name: comicIdOrSlug
  *         schema:
  *           type: string
  *         required: true
- *         description: Comic id
+ *         description: Comic id or slug
  *     responses:
  *       200:
  *         description: A comic object
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Comic'
+ *               $ref: '#/components/schemas/ComicDetail'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  *
- */
-
-/**
- * @swagger
- * /comics/{slug}:
- *   get:
- *     summary: Get comic by slug
- *     description: Get a comic by slug
- *     tags:
- *       - Comics
- *     parameters:
- *       - in: path
- *         name: slug
- *         schema:
- *           type: string
- *         required: true
- *         description: Comic slug
- *     responses:
- *       200:
- *         description: A comic object
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Comic'
- *       404:
- *         $ref: '#/components/responses/NotFound'
  */
 
 /**

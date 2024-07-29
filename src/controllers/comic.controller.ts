@@ -13,19 +13,15 @@ export class ComicController {
   })
 
   public getComic = catchAsync(async (req: Request, res: Response) => {
-    const comic = await comicService.getComicById(req.params.comicId)
-    res.status(httpStatus.OK).send(comic)
-  })
-
-  public getComicBySlug = catchAsync(async (req: Request, res: Response) => {
-    const comic = await comicService.getComicBySlug(req.params.slug)
+    const comic = await comicService.getComicByIdOrSlug(req.params.comicIdOrSlug)
     res.status(httpStatus.OK).send(comic)
   })
 
   public getComics = catchAsync(async (req: Request, res: Response) => {
-    const filter = pick(req.query, ['name', 'status', 'category', 'author'])
+    const filter = pick(req.query, ['vip', 'status'])
     const options = pick(req.query, ['sortBy', 'limit', 'page'])
-    const result = await comicService.queryComics(filter, options)
+    const { name, category } = pick(req.query, ['name', 'category'])
+    const result = await comicService.queryComics({ filter, options, name, category })
     res.status(httpStatus.OK).send(result)
   })
 

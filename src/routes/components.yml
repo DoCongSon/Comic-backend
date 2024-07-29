@@ -182,6 +182,57 @@ components:
         thumb_url: https://example.com/thumb.jpg
         author: ['Author name']
         categories: [{ id: 5ebac534954b54139806c112, name: Category name, slug: category-name }]
+    ComicDetail:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        vip:
+          type: boolean
+        origin_name:
+          type: array
+          items:
+            type: string
+        content:
+          type: string
+        status:
+          type: string
+          enum: [ongoing, completed]
+        thumb_url:
+          type: string
+        author:
+          type: array
+          items:
+            type: string
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+        chapters:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              chapter_name:
+                type: string
+      example:
+        id: 5ebac534954b54139806c112
+        name: Comic name
+        slug: comic-name
+        vip: false
+        origin_name: ['Comic name']
+        content: Comic content
+        status: ongoing
+        thumb_url: https://example.com/thumb.jpg
+        author: ['Author name']
+        categories: [{ id: 5ebac534954b54139806c112, name: Category name, slug: category-name }]
+        chapters: [{ id: 5ebac534954b54139806c112, chapter_name: Chapter name }]
     Error:
       type: object
       properties:
