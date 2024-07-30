@@ -415,6 +415,8 @@ export default router
  *         name: return
  *         schema:
  *           type: string
- *         example:
- *           return: 'http://example.com/login'
+ *         example: http://client.com/login?redirectFrom=google
+ *     responses:
+ *       200:
+ *         description: redirect to return query param url amd set refreshToken in cookie with name 'auth'.
  */

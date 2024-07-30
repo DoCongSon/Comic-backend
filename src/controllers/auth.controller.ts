@@ -25,15 +25,8 @@ export class AuthController {
     const state = req.query.state ? JSON.parse(decodeURIComponent(req.query.state as string)) : {}
     const returnTo = state.returnTo || '/'
     const tokens = await tokenService.generateAuthTokens(user as IUser)
-    const htmlWithEmbeddedTokens = `
-    <html>
-      <script>
-        window.localStorage.setItem('tokens', '${JSON.stringify(tokens)}');
-        window.location.href = '${returnTo}';
-      </script>
-    </html>
-    `
-    res.status(httpStatus.OK).send(htmlWithEmbeddedTokens)
+    res.cookie('auth', tokens.refresh.token)
+    res.redirect(returnTo)
   })
 
   public logout = catchAsync(async (req: Request, res: Response) => {
