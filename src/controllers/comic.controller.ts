@@ -18,10 +18,9 @@ export class ComicController {
   })
 
   public getComics = catchAsync(async (req: Request, res: Response) => {
-    const filter = pick(req.query, ['vip', 'status'])
+    const filter = pick(req.query, ['vip', 'status', 'name', 'category'])
     const options = pick(req.query, ['sortBy', 'limit', 'page'])
-    const { name, category } = pick(req.query, ['name', 'category'])
-    const result = await comicService.queryComics({ filter, options, name, category })
+    const result = await comicService.queryComics({ filter, options })
     res.status(httpStatus.OK).send(result)
   })
 

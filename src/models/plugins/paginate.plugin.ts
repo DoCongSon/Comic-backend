@@ -1,3 +1,5 @@
+import mongoose from 'mongoose'
+
 interface Schema {
   statics: any
 }
@@ -27,6 +29,15 @@ const paginate = (schema: Schema) => {
       options.limit && parseInt(options.limit.toString(), 10) > 0 ? parseInt(options.limit.toString(), 10) : 10
     const page = options.page && parseInt(options.page.toString(), 10) > 0 ? parseInt(options.page.toString(), 10) : 1
     const skip = (page - 1) * limit
+
+    if (filter.name) {
+      filter.name = { $regex: new RegExp(filter.name, 'i') }
+    }
+    // category: slug => category: _id
+    if (filter.category) {
+      const category = await mongoose.model('Category').findOne({ slug: filter.category })
+      filter.category = category ? { $in: [category._id] } : null
+    }
 
     const countPromise = this.countDocuments(filter).exec()
     let docsPromise = this.find(filter).sort(sort).skip(skip).limit(limit)

@@ -33,33 +33,8 @@ const getComicByIdOrSlug = async (comicIdOrSlug: ObjectId | string) => {
   }
 }
 
-const queryComics = async ({
-  filter,
-  options,
-  name,
-  category
-}: {
-  filter: any
-  options: Options
-  name?: string
-  category?: string
-}) => {
-  if (name || category) {
-    options.limit = 9999
-    options.page = 1
-  }
+const queryComics = async ({ filter, options }: { filter: any; options: Options }) => {
   const comics = await Comic.paginate(filter, { ...options, populate: 'category' })
-  if (name) {
-    comics.results = comics.results.filter((comic) => comic.name.toLowerCase().includes((name as string).toLowerCase()))
-    comics.totalResults = comics.results.length
-  }
-  if (category) {
-    comics.results = comics.results.filter((comic) => {
-      const categorySlugs = comic.category.map(({ slug }: any) => slug)
-      return categorySlugs.includes(category as string)
-    })
-    comics.totalResults = comics.results.length
-  }
   return comics
 }
 
@@ -149,7 +124,7 @@ const getComicsFromApi = async (slugs: string) => {
           vip: false,
           slug: comic.data?.item?.slug,
           origin_name: comic.data?.item?.origin_name,
-          content: comic.data?.item?.content,
+          content: comic.data?.item?.content?.replace(/<[^>]*>/g, ''),
           status: comic.data?.item?.status,
           thumb_url: comic.data?.seoOnPage?.seoSchema?.image,
           author: comic.data?.item?.author,
