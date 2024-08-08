@@ -23,7 +23,7 @@ const googleStrategy = new GoogleStrategy(
   {
     clientID: envConfig.google.clientId,
     clientSecret: envConfig.google.clientSecret,
-    callbackURL: '/api/v1/auth/google/callback',
+    callbackURL: `${envConfig.apiUrl}/auth/google/callback`,
     scope: ['email', 'profile']
   },
   async (accessToken, refreshToken, profile, done) => {
