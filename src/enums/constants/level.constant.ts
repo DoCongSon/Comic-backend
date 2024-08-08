@@ -22,6 +22,18 @@ export const levels = [
     levelName: 'Advanced',
     points: 500,
     ruby: 300
+  },
+  {
+    level: 4,
+    levelName: 'Expert',
+    points: 1000,
+    ruby: 500
+  },
+  {
+    level: 5,
+    levelName: 'Master',
+    points: 5000,
+    ruby: 1000
   }
 ]
 

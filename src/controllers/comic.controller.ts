@@ -4,6 +4,7 @@ import * as chapterService from '../services/chapter.service.js'
 import catchAsync from '../utils/catchAsync.js'
 import httpStatus from 'http-status'
 import pick from '../utils/pick.js'
+import { IUser } from 'src/models/user.model.js'
 
 export class ComicController {
   public getComicsFromApi = catchAsync(async (req: Request, res: Response) => {
@@ -18,10 +19,14 @@ export class ComicController {
   })
 
   public getComics = catchAsync(async (req: Request, res: Response) => {
-    const filter = pick(req.query, ['vip', 'status'])
+    const filter = pick(req.query, ['vip', 'status', 'name', 'category'])
     const options = pick(req.query, ['sortBy', 'limit', 'page'])
-    const { name, category } = pick(req.query, ['name', 'category'])
-    const result = await comicService.queryComics({ filter, options, name, category })
+    const result = await comicService.queryComics({ filter, options })
+    res.status(httpStatus.OK).send(result)
+  })
+
+  public getTopViewedComics = catchAsync(async (req: Request, res: Response) => {
+    const result = await comicService.getTopViewComics()
     res.status(httpStatus.OK).send(result)
   })
 
@@ -64,7 +69,7 @@ export class ComicController {
   })
 
   public getChapter = catchAsync(async (req: Request, res: Response) => {
-    const chapter = await chapterService.getChapterById(req.params.chapterId)
+    const chapter = await chapterService.getChapterById(req.params.chapterId, (req.user as IUser)?.id)
     res.status(httpStatus.OK).send(chapter)
   })
 }

@@ -3,12 +3,15 @@ import { ComicController } from '../../controllers/comic.controller.js'
 import validate from '../../middlewares/validate.middleware.js'
 import ComicValidation from '../../validations/comic.validation.js'
 import auth from '../../middlewares/auth.middleware.js'
+import optionalAuth from '../../middlewares/optionalAuth.middleware.js'
 
 const router = express.Router()
 
 const controller = new ComicController()
 
 router.post('/get-comics-from-api', controller.getComicsFromApi)
+
+router.get('/top-viewed', controller.getTopViewedComics)
 
 router.get('/', validate(ComicValidation.getComics), controller.getComics)
 router.post('/', auth('MANAGE_COMICS'), validate(ComicValidation.createComic), controller.createComic)
@@ -23,7 +26,12 @@ router.post(
   validate(ComicValidation.createChapter),
   controller.createChapter
 )
-router.get('/:comicId/chapters/:chapterId', validate(ComicValidation.getChapter), controller.getChapter)
+router.get(
+  '/:comicIdOrSlug/chapters/:chapterId',
+  optionalAuth(),
+  validate(ComicValidation.getChapter),
+  controller.getChapter
+)
 router.put(
   '/:comicId/chapters/:chapterId',
   auth('MANAGE_COMICS'),
@@ -426,19 +434,21 @@ export default router
 
 /**
  * @swagger
- * /comics/{comicId}/chapters/{chapterId}:
+ * /comics/{comicIdOrSlug}/chapters/{chapterId}:
  *   get:
  *     summary: Get chapter
- *     description: Get a chapter by id
+ *     description: Get a chapter by id or slug
  *     tags:
  *       - Comics
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: comicId
+ *         name: comicIdOrSlug
  *         schema:
  *           type: string
  *         required: true
- *         description: Comic id
+ *         description: Comic id or slug
  *       - in: path
  *         name: chapterId
  *         schema:
@@ -548,6 +558,27 @@ export default router
  *         $ref: '#/components/responses/Unauthorized'
  *       403:
  *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /comics/top-viewed:
+ *   get:
+ *     summary: Get top viewed comics
+ *     description: Get top viewed comics
+ *     tags:
+ *       - Comics
+ *     responses:
+ *       200:
+ *         description: A list of comics
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Comic'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */

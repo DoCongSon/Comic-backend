@@ -163,6 +163,8 @@ components:
           enum: [ongoing, completed]
         thumb_url:
           type: string
+        likes:
+          type: number
         author:
           type: array
           items:
@@ -180,6 +182,7 @@ components:
         content: Comic content
         status: ongoing
         thumb_url: https://example.com/thumb.jpg
+        likes: 0
         author: ['Author name']
         categories: [{ id: 5ebac534954b54139806c112, name: Category name, slug: category-name }]
     ComicDetail:
@@ -204,6 +207,8 @@ components:
           enum: [ongoing, completed]
         thumb_url:
           type: string
+        likes:
+          type: number
         author:
           type: array
           items:
@@ -230,6 +235,7 @@ components:
         content: Comic content
         status: ongoing
         thumb_url: https://example.com/thumb.jpg
+        likes: 0
         author: ['Author name']
         categories: [{ id: 5ebac534954b54139806c112, name: Category name, slug: category-name }]
         chapters: [{ id: 5ebac534954b54139806c112, chapter_name: Chapter name }]
@@ -240,7 +246,22 @@ components:
           type: number
         message:
           type: string
-
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        code:
+          type: string
+        ruby:
+          type: number
+      example:
+        id: 5ebac534954b54139806c112
+        user: 5ebac534954b54139806c112
+        code: PAYMENTCODE
+        ruby: 100
   responses:
     DuplicateEmail:
       description: Email already taken

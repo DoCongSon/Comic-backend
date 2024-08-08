@@ -8,7 +8,8 @@ const allRoles = {
     'MANAGE_ACHIEVEMENTS',
     'MANAGE_COMICS',
     'MANAGE_COMMENTS',
-    'MANAGE_CATEGORIES'
+    'MANAGE_CATEGORIES',
+    'MANAGE_PAYMENTS'
   ]
 }
 

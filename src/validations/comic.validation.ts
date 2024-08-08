@@ -64,7 +64,7 @@ const getChapters: SchemaValidator = {
 
 const getChapter: SchemaValidator = {
   params: Joi.object().keys({
-    comicId: Joi.string().required(),
+    comicIdOrSlug: Joi.string().required(),
     chapterId: Joi.string().required()
   })
 }

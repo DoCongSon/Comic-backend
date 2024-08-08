@@ -5,6 +5,8 @@ import ApiError from '../utils/ApiError.js'
 import httpStatus from 'http-status'
 import { ObjectId } from 'mongoose'
 import { levels } from '../enums/constants/level.constant.js'
+import { getChapterById } from './chapter.service.js'
+import { getComicById } from './comic.service.js'
 
 type OptionalIUser = Partial<IUser>
 
@@ -15,6 +17,23 @@ export const queryUsers = async (filter: any, options: Options) => {
 
 export const getUserById = async (id: ObjectId | string) => {
   const user = await User.findById(id)
+    .populate('progress.achievements')
+    .populate({
+      path: 'history',
+      select: 'chapter_name id',
+      populate: {
+        path: 'comic',
+        select: 'name thumb_url slug id'
+      }
+    })
+    .populate({
+      path: 'saved',
+      select: 'name thumb_url slug id'
+    })
+    .populate({
+      path: 'likes',
+      select: 'name thumb_url slug id'
+    })
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found')
   }
@@ -48,6 +67,17 @@ export const deleteUserById = async (userId: ObjectId | string) => {
 
 export const getUserByEmail = async (email: string) => {
   return User.findOne({ email })
+    .populate('progress.achievements')
+    .populate({
+      path: 'history',
+      select: 'chapter_name id',
+      populate: {
+        path: 'comic',
+        select: 'name thumb_url slug -_id'
+      }
+    })
+    .populate('saved')
+    .populate('likes')
 }
 
 export const generatePassword = () => {
@@ -108,4 +138,74 @@ export const incrementRuby = async (userId: ObjectId | string, ruby: number) => 
   user.progress.ruby += ruby
   await user.save()
   return user
+}
+
+export const addComicToHistory = async (userId: ObjectId | string, chapterId: ObjectId | string) => {
+  const user = await getUserById(userId)
+  if (user.history.includes(chapterId as ObjectId)) {
+    return user
+  }
+  const chapter = await getChapterById(chapterId)
+  user.history = user.history.filter((item: any) => {
+    return item.comic._id.toString() !== chapter.comic.toString()
+  })
+
+  if (user.history.length >= 10) {
+    user.history.shift()
+  }
+  user.history.push(chapterId as ObjectId)
+  await user.save()
+  return await getUserById(userId)
+}
+
+export const removeComicFromHistory = async (userId: ObjectId | string, chapterId: ObjectId | string) => {
+  const user = await getUserById(userId)
+  user.history = user.history.filter((id) => id.toString() !== chapterId.toString())
+  await user.save()
+  return await getUserById(userId)
+}
+
+export const addComicToSaved = async (userId: ObjectId | string, comicId: ObjectId | string) => {
+  const user = await getUserById(userId)
+  if (user.saved.includes(comicId as ObjectId)) {
+    return await getUserById(userId)
+  }
+  user.saved.push(comicId as ObjectId)
+  await user.save()
+  return await getUserById(userId)
+}
+
+export const removeComicFromSaved = async (userId: ObjectId | string, comicId: ObjectId | string) => {
+  const user = await getUserById(userId)
+  user.saved = user.saved.filter((item: any) => item._id.toString() !== comicId.toString())
+  await user.save()
+  return await getUserById(userId)
+}
+
+export const addComicToLikes = async (userId: ObjectId | string, comicId: ObjectId | string) => {
+  const user = await getUserById(userId)
+  const comic = await getComicById(comicId)
+  if (user.likes.includes(comicId as ObjectId)) {
+    return await getUserById(userId)
+  }
+  comic.likes += 1
+  await comic.save()
+  user.likes.push(comicId as ObjectId)
+  await user.save()
+  return await getUserById(userId)
+}
+
+export const removeComicFromLikes = async (userId: ObjectId | string, comicId: ObjectId | string) => {
+  const user = await getUserById(userId)
+  const comic = await getComicById(comicId)
+  user.likes = user.likes.filter((item: any) => item._id.toString() !== comicId.toString())
+  comic.likes -= 1
+  await comic.save()
+  await user.save()
+  return await getUserById(userId)
+}
+
+export const getTopUsers = async (limit: number) => {
+  const users = await User.find().sort({ 'progress.points': -1 }).limit(limit)
+  return users
 }
