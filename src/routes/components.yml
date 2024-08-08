@@ -246,7 +246,22 @@ components:
           type: number
         message:
           type: string
-
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        code:
+          type: string
+        ruby:
+          type: number
+      example:
+        id: 5ebac534954b54139806c112
+        user: 5ebac534954b54139806c112
+        code: PAYMENTCODE
+        ruby: 100
   responses:
     DuplicateEmail:
       description: Email already taken

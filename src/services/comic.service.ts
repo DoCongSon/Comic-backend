@@ -7,11 +7,21 @@ import { createChapter, getChaptersByComicId } from './chapter.service.js'
 import { CreateChapter } from '../models/chapter.model.js'
 import { createViewForComic } from './view.service.js'
 import { getCategoryBySlug } from './category.service.js'
+import { View } from '../models/view.model.js'
+
 const createComic = async (comicBody: CreateComic) => {
   if (await Comic.isSlugTaken(comicBody.slug)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Slug is already taken')
   }
   return Comic.create(comicBody)
+}
+
+const getComicById = async (comicId: ObjectId | string) => {
+  const comic = await Comic.findById(comicId).populate('category')
+  if (!comic) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Comic not found')
+  }
+  return comic
 }
 
 const getComicByIdOrSlug = async (comicIdOrSlug: ObjectId | string) => {
@@ -73,6 +83,20 @@ const deleteComicById = async (comicId: ObjectId | string) => {
  * @returns A promise that resolves to an array of objects representing the fetched comics and their chapters.
  * @throws {ApiError} If there is an error fetching data from the API.
  */
+
+const getTopViewComics = async () => {
+  const views = await View.find().sort({ totalViews: -1 }).limit(10)
+  const response = views.map(async (view) => getComicById(view.comic))
+  const comics = await Promise.all(response)
+
+  return comics.map((comic, index) => {
+    return {
+      ...comic.toJSON(),
+      totalViews: views[index].totalViews
+    }
+  })
+}
+
 const getComicsFromApi = async (slugs: string) => {
   const api = 'https://otruyenapi.com/v1/api/truyen-tranh/'
   try {
@@ -183,4 +207,13 @@ const getComicsFromApi = async (slugs: string) => {
   }
 }
 
-export { getComicsFromApi, createComic, getComicByIdOrSlug, queryComics, updateComicById, deleteComicById }
+export {
+  getComicsFromApi,
+  createComic,
+  getComicByIdOrSlug,
+  queryComics,
+  updateComicById,
+  deleteComicById,
+  getComicById,
+  getTopViewComics
+}

@@ -3,6 +3,7 @@ import * as userService from '../services/user.service.js'
 import catchAsync from '../utils/catchAsync.js'
 import httpStatus from 'http-status'
 import pick from '../utils/pick.js'
+import { IUser } from 'src/models/user.model.js'
 
 export class UserController {
   public getUsers = catchAsync(async (req: Request, res: Response) => {
@@ -46,5 +47,40 @@ export class UserController {
   public removeAchievementFromUser = catchAsync(async (req: Request, res: Response) => {
     const user = await userService.removeAchievementFromUser(req.params.userId, req.params.achievementId)
     res.status(httpStatus.OK).send(user)
+  })
+
+  public addComicToHistory = catchAsync(async (req: Request, res: Response) => {
+    const user = await userService.addComicToHistory((req.user as IUser).id, req.body.chapterId)
+    res.status(httpStatus.OK).send(user)
+  })
+
+  public removeComicFromHistory = catchAsync(async (req: Request, res: Response) => {
+    const user = await userService.removeComicFromHistory((req.user as IUser).id, req.params.chapterId)
+    res.status(httpStatus.OK).send(user)
+  })
+
+  public addComicToSaved = catchAsync(async (req: Request, res: Response) => {
+    const user = await userService.addComicToSaved((req.user as IUser).id, req.body.comicId)
+    res.status(httpStatus.OK).send(user)
+  })
+
+  public removeComicFromSaved = catchAsync(async (req: Request, res: Response) => {
+    const user = await userService.removeComicFromSaved((req.user as IUser).id, req.params.comicId)
+    res.status(httpStatus.OK).send(user)
+  })
+
+  public addComicToLikes = catchAsync(async (req: Request, res: Response) => {
+    const user = await userService.addComicToLikes((req.user as IUser).id, req.body.comicId)
+    res.status(httpStatus.OK).send(user)
+  })
+
+  public removeComicFromLikes = catchAsync(async (req: Request, res: Response) => {
+    const user = await userService.removeComicFromLikes((req.user as IUser).id, req.params.comicId)
+    res.status(httpStatus.OK).send(user)
+  })
+
+  public getTopUsers = catchAsync(async (req: Request, res: Response) => {
+    const users = await userService.getTopUsers(10)
+    res.status(httpStatus.OK).send(users)
   })
 }

@@ -8,6 +8,14 @@ const router = express.Router()
 
 const controller = new UserController()
 
+router.post('/history', auth(), validate(UserValidation.CreateHistory), controller.addComicToHistory)
+router.delete('/history/:chapterId', auth(), validate(UserValidation.DeleteHistory), controller.removeComicFromHistory)
+router.post('/save', auth(), validate(UserValidation.CreateSaved), controller.addComicToSaved)
+router.delete('/save/:comicId', auth(), validate(UserValidation.DeleteSaved), controller.removeComicFromSaved)
+router.post('/like', auth(), validate(UserValidation.CreateLikes), controller.addComicToLikes)
+router.delete('/like/:comicId', auth(), validate(UserValidation.DeleteLikes), controller.removeComicFromLikes)
+router.get('/top-users', controller.getTopUsers)
+
 router.get('/', auth('GET_USERS'), validate(UserValidation.getUsers), controller.getUsers)
 router.get('/:userId', auth('MANAGE_USERS'), validate(UserValidation.getUser), controller.getUser)
 router.post('/', auth('MANAGE_USERS'), validate(UserValidation.createUser), controller.createUser)
@@ -28,7 +36,7 @@ router.post(
 )
 router.delete(
   '/:userId/achievements/:achievementId',
-  auth(),
+  auth('MANAGE_USERS'),
   validate(UserValidation.removeAchievement),
   controller.removeAchievementFromUser
 )
@@ -379,6 +387,230 @@ export default router
  *         $ref: '#/components/responses/Unauthorized'
  *       403:
  *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /users/history:
+ *   post:
+ *     description: Add comic to user history
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               chapterId:
+ *                 type: string
+ *             required:
+ *               - chapterId
+ *             example:
+ *               chapterId: 5f0b5e9d4f2f31b3c1f7f8ca
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /users/history/{chapterId}:
+ *   delete:
+ *     description: Remove comic from user history
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: chapterId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: 5f0b5e9d4f2f31b3c1f7f8ca
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /users/save:
+ *   post:
+ *     description: Add comic to user saved
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               comicId:
+ *                 type: string
+ *             required:
+ *               - comicId
+ *             example:
+ *               comicId: 5f0b5e9d4f2f31b3c1f7f8ca
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /users/save/{comicId}:
+ *   delete:
+ *     description: Remove comic from user saved
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: comicId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: 5f0b5e9d4f2f31b3c1f7f8ca
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /users/like:
+ *   post:
+ *     description: Add comic to user liked
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               comicId:
+ *                 type: string
+ *             required:
+ *               - comicId
+ *             example:
+ *               comicId: 5f0b5e9d4f2f31b3c1f7f8ca
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /users/like/{comicId}:
+ *   delete:
+ *     description: Remove comic from user liked
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: comicId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: 5f0b5e9d4f2f31b3c1f7f8ca
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /users/top-users:
+ *   get:
+ *     description: Get top users
+ *     tags:
+ *       - Users
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  */

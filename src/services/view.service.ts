@@ -63,7 +63,23 @@ const createViewForComic = async (comicId: ObjectId | string) => {
 
 const getViewByComicId = async (comicId: ObjectId | string) => {
   const view = await View.findOne({ comic: comicId })
+    .populate('dailyViews')
+    .populate('weeklyViews')
+    .populate('monthlyViews')
   return view
 }
 
-export { updateView, createViewForComic, getViewByComicId }
+const incrementView = async (comicId: ObjectId | string) => {
+  const view: any = await getViewByComicId(comicId)
+  if (!view) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'View not found')
+  }
+  updateView(view.dailyViews, 'day')
+  updateView(view.weeklyViews, 'week')
+  updateView(view.monthlyViews, 'month')
+  view.totalViews += 1
+  await view.save()
+  return view
+}
+
+export { updateView, createViewForComic, getViewByComicId, incrementView }

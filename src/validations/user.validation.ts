@@ -73,6 +73,42 @@ const removeAchievement: SchemaValidator = {
   })
 }
 
+const CreateHistory: SchemaValidator = {
+  body: Joi.object().keys({
+    chapterId: Joi.string().required()
+  })
+}
+
+const DeleteHistory: SchemaValidator = {
+  params: Joi.object().keys({
+    chapterId: Joi.string().required()
+  })
+}
+
+const CreateSaved: SchemaValidator = {
+  body: Joi.object().keys({
+    comicId: Joi.string().required()
+  })
+}
+
+const DeleteSaved: SchemaValidator = {
+  params: Joi.object().keys({
+    comicId: Joi.string().required()
+  })
+}
+
+const CreateLikes: SchemaValidator = {
+  body: Joi.object().keys({
+    comicId: Joi.string().required()
+  })
+}
+
+const DeleteLikes: SchemaValidator = {
+  params: Joi.object().keys({
+    comicId: Joi.string().required()
+  })
+}
+
 export default {
   getUsers,
   getUser,
@@ -81,5 +117,11 @@ export default {
   deleteUser,
   updatePoints,
   addAchievement,
-  removeAchievement
+  removeAchievement,
+  CreateHistory,
+  DeleteHistory,
+  CreateSaved,
+  DeleteSaved,
+  CreateLikes,
+  DeleteLikes
 }
