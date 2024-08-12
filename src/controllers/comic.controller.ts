@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import * as comicService from '../services/comic.service.js'
 import * as chapterService from '../services/chapter.service.js'
+import * as userService from '../services/user.service.js'
 import catchAsync from '../utils/catchAsync.js'
 import httpStatus from 'http-status'
 import pick from '../utils/pick.js'
@@ -69,7 +70,11 @@ export class ComicController {
   })
 
   public getChapter = catchAsync(async (req: Request, res: Response) => {
-    const chapter = await chapterService.getChapterById(req.params.chapterId, (req.user as IUser)?.id)
+    const user = req.user as IUser
+    const chapter = await chapterService.readChapterById(req.params.chapterId, user?.id)
+    if (user) {
+      await userService.addComicToHistory(user.id, chapter.id)
+    }
     res.status(httpStatus.OK).send(chapter)
   })
 }

@@ -3,7 +3,7 @@ import { CreateUser, IUser, User } from '../models/user.model.js'
 import { Options } from '../models/plugins/paginate.plugin.js'
 import ApiError from '../utils/ApiError.js'
 import httpStatus from 'http-status'
-import { ObjectId } from 'mongoose'
+import { ObjectId, isValidObjectId } from 'mongoose'
 import { levels } from '../enums/constants/level.constant.js'
 import { getChapterById } from './chapter.service.js'
 import { getComicById } from './comic.service.js'
@@ -16,6 +16,9 @@ export const queryUsers = async (filter: any, options: Options) => {
 }
 
 export const getUserById = async (id: ObjectId | string) => {
+  if (!isValidObjectId(id)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid user id')
+  }
   const user = await User.findById(id)
     .populate('progress.achievements')
     .populate({
@@ -146,21 +149,21 @@ export const addComicToHistory = async (userId: ObjectId | string, chapterId: Ob
     return user
   }
   const chapter = await getChapterById(chapterId)
-  user.history = user.history.filter((item: any) => {
+  const history = user.history.filter((item: any) => {
     return item.comic._id.toString() !== chapter.comic.toString()
   })
 
-  if (user.history.length >= 10) {
-    user.history.shift()
+  if (history.length >= 10) {
+    history.shift()
   }
-  user.history.push(chapterId as ObjectId)
-  await user.save()
+  history.push(chapterId as ObjectId)
+  await user.updateOne({ history })
   return await getUserById(userId)
 }
 
 export const removeComicFromHistory = async (userId: ObjectId | string, chapterId: ObjectId | string) => {
   const user = await getUserById(userId)
-  user.history = user.history.filter((id) => id.toString() !== chapterId.toString())
+  user.history = user.history.filter((item: any) => item._id.toString() !== chapterId.toString())
   await user.save()
   return await getUserById(userId)
 }

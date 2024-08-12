@@ -3,15 +3,23 @@ import ApiError from '../utils/ApiError.js'
 import { Chapter, CreateChapter } from '../models/chapter.model.js'
 import { ObjectId } from 'mongoose'
 import { Comic } from '../models/comic.model.js'
-import { getUserById, updatePointsAndLevel } from './user.service.js'
+import { addComicToHistory, getUserById, updatePointsAndLevel } from './user.service.js'
 import { IUser } from 'src/models/user.model.js'
-import { getViewByComicId, incrementView } from './view.service.js'
+import { incrementView } from './view.service.js'
 
 const createChapter = async (chapterBody: CreateChapter) => {
   return Chapter.create(chapterBody)
 }
 
-const getChapterById = async (chapterId: ObjectId | string, userId?: ObjectId | string) => {
+const getChapterById = async (chapterId: ObjectId | string) => {
+  const chapter: any = await Chapter.findById(chapterId)
+  if (!chapter) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Chapter not found')
+  }
+  return chapter
+}
+
+const readChapterById = async (chapterId: ObjectId | string, userId?: ObjectId | string) => {
   const chapter: any = await Chapter.findById(chapterId).populate({
     path: 'comic',
     select: 'vip id'
@@ -91,6 +99,7 @@ const getLastChapterByComicId = async (comicId: ObjectId | string) => {
 export {
   createChapter,
   getChapterById,
+  readChapterById,
   getChaptersByComicId,
   queryChapters,
   updateChapterById,
